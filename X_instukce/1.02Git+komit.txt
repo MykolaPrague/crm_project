@@ -18,3 +18,26 @@ git add .
     3. Зробити перший коміт
 
 git commit -m "Старт проєкту CRM"
+
+    4. Створити репозиторій на GitHub
+Зайди на GitHub і натисни New repository.
+
+Назви, наприклад, crm_project.
+
+Не додавай README (бо він у нас буде локально).
+
+Натисни Create repository.
+
+    5. Підключити віддалений репозиторій
+На сторінці, що з’явиться після створення, GitHub дасть тобі команду.
+Вона буде виглядати приблизно так:
+
+
+git remote add origin github.com/MykolaPrague/crm_project.git
+
+    6. Відправити код на GitHub
+
+
+github.com/MykolaPrague/crm_project.git
+>> git branch -M main
+>> git push -u origin main
