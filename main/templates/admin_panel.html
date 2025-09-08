@@ -1,66 +1,106 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
-<h1>Адмін-панель</h1>
-<p>Лише для суперкористувачів.</p>
+<h1>{% trans "Адмін-панель" %}</h1>
+<p>{% trans "Лише для суперкористувачів." %}</p>
 
 <section class="grid">
   <article>
-    <header><strong>Користувачі</strong></header>
-    <p>Всього: {{ total_users }}</p>
-    <p>Із правами staff (менеджери): {{ staff_count }}</p>
+    <header><strong>{% trans "Користувачі" %}</strong></header>
+    <p>
+      {% blocktrans with n=total_users %}Всього: {{ n }}{% endblocktrans %}
+    </p>
+    <p>
+      {% blocktrans with n=staff_count %}Із правами staff (менеджери): {{ n }}{% endblocktrans %}
+    </p>
   </article>
+
   <article>
-    <header><strong>Співробітники</strong></header>
-    <p>Активних профілів: {{ active_employees }}</p>
+    <header><strong>{% trans "Співробітники" %}</strong></header>
+    <p>
+      {% blocktrans with n=active_employees %}Активних профілів: {{ n }}{% endblocktrans %}
+    </p>
   </article>
+
   <article>
-    <header><strong>Активності</strong></header>
-    <p>За тиждень: {{ activities_last_week }}</p>
+    <header><strong>{% trans "Активності" %}</strong></header>
+    <p>
+      {% blocktrans with n=activities_last_week %}За тиждень: {{ n }}{% endblocktrans %}
+    </p>
   </article>
 </section>
-<h3>Співробітники</h3>
 
+<h3>{% trans "Співробітники" %}</h3>
 <table>
-  <thead><tr><th>Юзер</th><th>Посада</th><th>Відділ</th><th>Статус</th><th>Дата найму</th></tr></thead>
+  <thead>
+    <tr>
+      <th>{% trans "Юзер" %}</th>
+      <th>{% trans "ПІБ" %}</th>
+      <th>{% trans "Статус" %}</th>
+      <th>{% trans "Дата прийому" %}</th>
+      <th>{% trans "Дата звільнення" %}</th>
+    </tr>
+  </thead>
   <tbody>
     {% for e in employees %}
       <tr>
         <td>
           <a href="{% url 'employee_detail' e.user.id %}">{{ e.user.username }}</a>
         </td>
-        <td>{{ e.position|default:"—" }}</td>
-        <td>{{ e.department|default:"—" }}</td>
-        <td>{% if e.is_active %}Активний{% else %}Неактивний{% endif %}</td>
-        <td>{{ e.hired_at|date:"Y-m-d"|default:"—" }}</td>
+        <td>
+          {{ e.full_name|default:"—" }}
+        </td>
+        <td>
+          {% if e.is_active %}{% trans "Активний" %}{% else %}{% trans "Неактивний" %}{% endif %}
+        </td>
+        <td>{{ e.hire_date|date:"Y-m-d"|default:"—" }}</td>
+        <td>{{ e.termination_date|date:"Y-m-d"|default:"—" }}</td>
       </tr>
     {% empty %}
-      <tr><td colspan="5">Поки немає співробітників</td></tr>
+      <tr><td colspan="5">{% trans "Поки немає співробітників" %}</td></tr>
     {% endfor %}
   </tbody>
 </table>
 
-<h3>Топ активних (30 днів)</h3>
+<h3>{% trans "Топ активних (30 днів)" %}</h3>
 <table>
-  <thead><tr><th>Користувач</th><th>Активностей</th></tr></thead>
+  <thead>
+    <tr>
+      <th>{% trans "Користувач" %}</th>
+      <th>{% trans "Активностей" %}</th>
+    </tr>
+  </thead>
   <tbody>
     {% for row in top_active %}
-      <tr><td>{{ row.user__username }}</td><td>{{ row.total }}</td></tr>
+      <tr>
+        <td>{{ row.user__username }}</td>
+        <td>{{ row.total }}</td>
+      </tr>
     {% empty %}
-      <tr><td colspan="2">Немає даних</td></tr>
+      <tr><td colspan="2">{% trans "Немає даних" %}</td></tr>
     {% endfor %}
   </tbody>
 </table>
 
-<h3>Оцінки роботи (середній бал)</h3>
+<h3>{% trans "Оцінки роботи (середній бал)" %}</h3>
 <table>
-  <thead><tr><th>Користувач</th><th>Середній бал</th><th>К-сть оцінок</th></tr></thead>
+  <thead>
+    <tr>
+      <th>{% trans "Користувач" %}</th>
+      <th>{% trans "Середній бал" %}</th>
+      <th>{% trans "К-сть оцінок" %}</th>
+    </tr>
+  </thead>
   <tbody>
     {% for row in latest_reviews %}
-      <tr><td>{{ row.user__username }}</td><td>{{ row.avg_score|floatformat:1 }}</td><td>{{ row.count }}</td></tr>
+      <tr>
+        <td>{{ row.user__username }}</td>
+        <td>{{ row.avg_score|floatformat:1 }}</td>
+        <td>{{ row.count }}</td>
+      </tr>
     {% empty %}
-      <tr><td colspan="3">Немає даних</td></tr>
+      <tr><td colspan="3">{% trans "Немає даних" %}</td></tr>
     {% endfor %}
   </tbody>
 </table>
-
 {% endblock %}

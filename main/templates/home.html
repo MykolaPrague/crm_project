@@ -1,9 +1,10 @@
+{% load i18n %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>Ласкаво просимо</title>
+    <title>{% trans "Ласкаво просимо" %}</title>
     <!-- Pico -->
     <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
     <link rel="stylesheet" href="{% static 'main/css/home.css' %}">
@@ -11,11 +12,11 @@
 <body>
     <main class="container-fluid overlay">
         <section class="welcome-box">
-            <h1>Ласкаво просимо до CRM</h1>
-            <p>Увійдіть або зареєструйтесь, щоб почати працювати</p>
+            <h1>{% trans "Ласкаво просимо до CRM" %}</h1>
+            <p>{% trans "Увійдіть або зареєструйтесь, щоб почати працювати" %}</p>
             <div class="grid">
-                <a href="{% url 'login' %}" role="button" class="contrast">Увійти</a>
-                <a href="{% url 'register' %}" role="button">Реєстрація</a>
+                <a href="{% url 'login' %}" role="button" class="contrast">{% trans "Увійти" %}</a>
+                <a href="{% url 'register' %}" role="button">{% trans "Реєстрація" %}</a>
             </div>
         </section>
     </main>

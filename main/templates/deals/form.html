@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
 <article class="auth-card" style="max-width:640px;margin:auto;">
@@ -7,24 +8,24 @@
     {% csrf_token %}
 
     {% if form.client.errors %}<small role="alert">{{ form.client.errors }}</small>{% endif %}
-    <label>Клієнт</label>
+    <label>{% trans "Клієнт" %}</label>
     {{ form.client }}
 
-    <label>Назва</label>
+    <label>{% trans "Назва" %}</label>
     {{ form.title }}
 
-    <label>Сума</label>
+    <label>{% trans "Сума" %}</label>
     {{ form.amount }}
 
-    <label>Статус</label>
+    <label>{% trans "Статус" %}</label>
     {{ form.status }}
 
-    <label>Нотатки</label>
+    <label>{% trans "Нотатки" %}</label>
     {{ form.notes }}
 
     <div style="margin-top:1rem">
-      <button type="submit">Зберегти</button>
-      <a href="{% url 'client_list' %}" role="button" class="secondary">Скасувати</a>
+      <button type="submit">{% trans "Зберегти" %}</button>
+      <a href="{% url 'client_list' %}" role="button" class="secondary">{% trans "Скасувати" %}</a>
     </div>
   </form>
 </article>

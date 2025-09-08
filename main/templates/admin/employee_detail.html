@@ -1,6 +1,7 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
-<h1>Картка співробітника</h1>
+<h1>{% trans "Картка співробітника" %}</h1>
 
 <article class="grid">
   <div>
@@ -13,50 +14,50 @@
       <figcaption>{{ emp.full_name }}</figcaption>
     </figure>
 
-    <p><strong>Обліковий запис:</strong> {{ emp.user.username }}</p>
-    <p><strong>Статус:</strong> {% if emp.is_active %}Активний{% else %}Неактивний{% endif %}</p>
-    <p><strong>Прогули (лічильник):</strong> {{ emp.absences_count }}</p>
+    <p><strong>{% trans "Обліковий запис:" %}</strong> {{ emp.user.username }}</p>
+    <p><strong>{% trans "Статус:" %}</strong> {% if emp.is_active %}{% trans "Активний" %}{% else %}{% trans "Неактивний" %}{% endif %}</p>
+    <p><strong>{% trans "Прогули (лічильник):" %}</strong> {{ emp.absences_count }}</p>
 
     <div style="margin-top:1rem">
-      <a href="{% url 'employee_edit' emp.user.id %}" role="button">Редагувати</a>
+      <a href="{% url 'employee_edit' emp.user.id %}" role="button">{% trans "Редагувати" %}</a>
     </div>
   </div>
 
   <div>
-    <h3>Особисті дані</h3>
+    <h3>{% trans "Особисті дані" %}</h3>
     <p>
-      <strong>Ім’я:</strong> {{ emp.first_name|default:"—" }}<br>
-      <strong>Прізвище:</strong> {{ emp.last_name|default:"—" }}<br>
-      <strong>Стать:</strong>
-      {% if emp.gender == "m" %}Чоловіча{% elif emp.gender == "f" %}Жіноча{% else %}Інше/Не вказано{% endif %}<br>
-      <strong>Дата народження:</strong> {{ emp.birth_date|date:"Y-m-d"|default:"—" }}<br>
-      <strong>Місце народження:</strong> {{ emp.birth_place|default:"—" }}<br>
-      <strong>Адреса реєстрації:</strong> {{ emp.registration_address|default:"—" }}<br>
-      <strong>Сімейний стан:</strong>
-      {% if emp.marital_status == "married" %}Одружений/заміжня
-      {% elif emp.marital_status == "divorced" %}Розлучений/розлучена
-      {% elif emp.marital_status == "widowed" %}Вдівець/вдова
-      {% else %}Вільний/вільна{% endif %}
+      <strong>{% trans "Ім’я:" %}</strong> {{ emp.first_name|default:"—" }}<br>
+      <strong>{% trans "Прізвище:" %}</strong> {{ emp.last_name|default:"—" }}<br>
+      <strong>{% trans "Стать:" %}</strong>
+      {% if emp.gender == "m" %}{% trans "Чоловіча" %}{% elif emp.gender == "f" %}{% trans "Жіноча" %}{% else %}{% trans "Інше/Не вказано" %}{% endif %}<br>
+      <strong>{% trans "Дата народження:" %}</strong> {{ emp.birth_date|date:"Y-m-d"|default:"—" }}<br>
+      <strong>{% trans "Місце народження:" %}</strong> {{ emp.birth_place|default:"—" }}<br>
+      <strong>{% trans "Адреса реєстрації:" %}</strong> {{ emp.registration_address|default:"—" }}<br>
+      <strong>{% trans "Сімейний стан:" %}</strong>
+      {% if emp.marital_status == "married" %}{% trans "Одружений/заміжня" %}
+      {% elif emp.marital_status == "divorced" %}{% trans "Розлучений/розлучена" %}
+      {% elif emp.marital_status == "widowed" %}{% trans "Вдівець/вдова" %}
+      {% else %}{% trans "Вільний/вільна" %}{% endif %}
     </p>
 
-    <h3>Робота</h3>
+    <h3>{% trans "Робота" %}</h3>
     <p>
-      <strong>Дата прийому:</strong> {{ emp.hire_date|date:"Y-m-d"|default:"—" }}<br>
-      <strong>Дата звільнення:</strong> {{ emp.termination_date|date:"Y-m-d"|default:"—" }}
+      <strong>{% trans "Дата прийому:" %}</strong> {{ emp.hire_date|date:"Y-m-d"|default:"—" }}<br>
+      <strong>{% trans "Дата звільнення:" %}</strong> {{ emp.termination_date|date:"Y-m-d"|default:"—" }}
     </p>
 
-    <h3>Документи</h3>
+    <h3>{% trans "Документи" %}</h3>
     <p>
       {% if emp.contract_file %}
-        <a href="{{ emp.contract_file.url }}" target="_blank" rel="noopener">📄 Контракт</a>
-      {% else %}
+        <a href="{{ emp.contract_file.url }}" target="_blank" rel="noopener">{% trans "📄 Контракт" %}</a>
+      {% else %}{% trans "
         — Немає
-      {% endif %}
+      " %}{% endif %}
     </p>
   </div>
 </article>
 
 <p style="margin-top:1rem;">
-  <a href="{% url 'admin_panel' %}" class="secondary" role="button">← До адмін-панелі</a>
+  <a href="{% url 'admin_panel' %}" class="secondary" role="button">{% trans "← До адмін-панелі" %}</a>
 </p>
 {% endblock %}

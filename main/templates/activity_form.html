@@ -1,3 +1,4 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
 <h1>{{ title }}</h1>
@@ -5,20 +6,20 @@
   {% csrf_token %}
   <div class="grid">
     <div>
-      <label>Тип</label>
+      <label>{% trans "Тип" %}</label>
       {{ form.kind }}
     </div>
     <div>
-      <label>Тривалість (хв)</label>
+      <label>{% trans "Тривалість (хв)" %}</label>
       {{ form.duration_min }}
     </div>
     <div class="col-12">
-      <label>Нотатки</label>
+      <label>{% trans "Нотатки" %}</label>
       {{ form.notes }}
     </div>
   </div>
   <br>
-  <button type="submit">Зберегти</button>
-  <a href="{% url 'dashboard' %}" class="secondary" role="button">Скасувати</a>
+  <button type="submit">{% trans "Зберегти" %}</button>
+  <a href="{% url 'dashboard' %}" class="secondary" role="button">{% trans "Скасувати" %}</a>
 </form>
 {% endblock %}

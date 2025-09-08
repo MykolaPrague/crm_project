@@ -1,33 +1,34 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
 <h1>{{ deal.title }}</h1>
 <p>
-  <strong>Клієнт:</strong> <a href="{% url 'client_detail' deal.client.pk %}">{{ deal.client.name }}</a><br>
-  <strong>Сума:</strong> {{ deal.amount }}<br>
-  <strong>Статус:</strong>
-  {% if deal.status == "closed" %}✅ Закрито
-  {% elif deal.status == "in_progress" %}🔄 В роботі
-  {% else %}🆕 Новий
+  <strong>{% trans "Клієнт:" %}</strong> <a href="{% url 'client_detail' deal.client.pk %}">{{ deal.client.name }}</a><br>
+  <strong>{% trans "Сума:" %}</strong> {{ deal.amount }}<br>
+  <strong>{% trans "Статус:" %}</strong>
+  {% if deal.status == "closed" %}{% trans "✅ Закрито" %}
+  {% elif deal.status == "in_progress" %}{% trans "🔄 В роботі" %}
+  {% else %}{% trans "🆕 Новий" %}
   {% endif %}
 </p>
 
 {% if deal.notes %}
   <article>
-    <header><strong>Нотатки</strong></header>
+    <header><strong>{% trans "Нотатки" %}</strong></header>
     <p>{{ deal.notes|linebreaksbr }}</p>
   </article>
 {% endif %}
 
 <hr>
-<h3>Вкладення</h3>
+<h3>{% trans "Вкладення" %}</h3>
 
 {% if attachments %}
 <table>
   <thead>
     <tr>
-      <th>Файл</th>
-      <th>Завантажено</th>
-      <th>Ким</th>
+      <th>{% trans "Файл" %}</th>
+      <th>{% trans "Завантажено" %}</th>
+      <th>{% trans "Ким" %}</th>
       {% if user.is_staff or user.is_superuser %}<th></th>{% endif %}
     </tr>
   </thead>
@@ -41,7 +42,7 @@
           <td>
             <form method="post" action="{% url 'deal_attachment_delete' a.pk %}">
               {% csrf_token %}
-              <button type="submit" class="secondary">Видалити</button>
+              <button type="submit" class="secondary">{% trans "Видалити" %}</button>
             </form>
           </td>
         {% endif %}
@@ -50,19 +51,19 @@
   </tbody>
 </table>
 {% else %}
-  <p>Файлів поки немає.</p>
+  <p>{% trans "Файлів поки немає." %}</p>
 {% endif %}
 
 {% if user.is_staff or user.is_superuser %}
   <form method="post" action="{% url 'deal_attachment_upload' deal.pk %}" enctype="multipart/form-data" style="margin-top:1rem">
     {% csrf_token %}
-    <label>Додати файл</label>
+    <label>{% trans "Додати файл" %}</label>
     {{ form.file }}
-    <button type="submit">Завантажити</button>
+    <button type="submit">{% trans "Завантажити" %}</button>
   </form>
 {% endif %}
 
 <div style="margin-top:1rem">
-  <a href="{% url 'client_detail' deal.client.pk %}" role="button" class="secondary">← До клієнта</a>
+  <a href="{% url 'client_detail' deal.client.pk %}" role="button" class="secondary">{% trans "← До клієнта" %}</a>
 </div>
 {% endblock %}

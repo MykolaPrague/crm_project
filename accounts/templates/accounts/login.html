@@ -1,10 +1,11 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
 <div class="auth-wrap">
   <article class="auth-card">
     <header>
-      <h1 style="margin:0">Вхід у CRM</h1>
-      <p style="margin:0;color:var(--muted-color)">Раді вас бачити 👋</p>
+      <h1 style="margin:0">{% trans "Вхід у CRM" %}</h1>
+      <p style="margin:0;color:var(--muted-color)">{% trans "Раді вас бачити 👋" %}</p>
     </header>
 
     {% if form.non_field_errors %}
@@ -18,7 +19,7 @@
     <form method="post">
       {% csrf_token %}
 
-      <label for="{{ form.username.id_for_label }}">Логін</label>
+      <label for="{{ form.username.id_for_label }}">{% trans "Логін" %}</label>
       {{ form.username }}
       {% if form.username.errors %}
         <small role="alert">
@@ -26,7 +27,7 @@
         </small>
       {% endif %}
 
-      <label for="{{ form.password.id_for_label }}">Пароль</label>
+      <label for="{{ form.password.id_for_label }}">{% trans "Пароль" %}</label>
       {{ form.password }}
       {% if form.password.errors %}
         <small role="alert">
@@ -37,20 +38,19 @@
       <div class="grid" style="margin-top:1rem; align-items:center;">
         <div>
           <label>
-            <input type="checkbox" name="remember" />
-            Запам’ятати мене
+            <input type="checkbox" name="remember" />{% trans "Запам’ятати мене" %}
           </label>
         </div>
         <div style="text-align:right;">
-          <a href="{% url 'password_reset' %}">Забули пароль?</a>
+          <a href="{% url 'password_reset' %}">{% trans "Забули пароль?" %}</a>
         </div>
       </div>
 
-      <button type="submit" style="width:100%; margin-top:1rem;">Увійти</button>
+      <button type="submit" style="width:100%; margin-top:1rem;">{% trans "Увійти" %}</button>
     </form>
 
     <footer style="margin-top:1rem; text-align:center;">
-      <small>Немає акаунта? <a href="{% url 'register' %}">Зареєструватися</a></small>
+      <small>{% trans "Немає акаунта?" %} <a href="{% url 'register' %}">{% trans "Зареєструватися" %}</a></small>
     </footer>
   </article>
 </div>

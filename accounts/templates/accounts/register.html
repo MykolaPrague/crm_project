@@ -1,11 +1,12 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
 <div class="auth-wrap">
   <article class="auth-card">
     <header style="text-align:center;">
       <span style="font-size:2rem;">📝</span>
-      <h1 style="margin:0">Реєстрація</h1>
-      <p style="margin:0;color:var(--muted-color)">Створіть обліковий запис, щоб увійти до CRM</p>
+      <h1 style="margin:0">{% trans "Реєстрація" %}</h1>
+      <p style="margin:0;color:var(--muted-color)">{% trans "Створіть обліковий запис, щоб увійти до CRM" %}</p>
     </header>
 
     {% if form.non_field_errors %}
@@ -19,7 +20,7 @@
     <form method="post" style="margin-top:1rem;">
       {% csrf_token %}
 
-      <label for="{{ form.username.id_for_label }}">Логін</label>
+      <label for="{{ form.username.id_for_label }}">{% trans "Логін" %}</label>
       {{ form.username }}
       {% if form.username.errors %}
         <small role="alert">
@@ -27,7 +28,7 @@
         </small>
       {% endif %}
 
-      <label for="{{ form.password1.id_for_label }}">Пароль</label>
+      <label for="{{ form.password1.id_for_label }}">{% trans "Пароль" %}</label>
       {{ form.password1 }}
       {% if form.password1.help_text %}
         <small>{{ form.password1.help_text|safe }}</small>
@@ -38,7 +39,7 @@
         </small>
       {% endif %}
 
-      <label for="{{ form.password2.id_for_label }}">Підтвердіть пароль</label>
+      <label for="{{ form.password2.id_for_label }}">{% trans "Підтвердіть пароль" %}</label>
       {{ form.password2 }}
       {% if form.password2.errors %}
         <small role="alert">
@@ -46,11 +47,11 @@
         </small>
       {% endif %}
 
-      <button type="submit" style="width:100%; margin-top:1rem;">Зареєструватися</button>
+      <button type="submit" style="width:100%; margin-top:1rem;">{% trans "Зареєструватися" %}</button>
     </form>
 
     <footer style="margin-top:1rem; text-align:center;">
-      <small>Вже маєте акаунт? <a href="{% url 'login' %}">Увійти</a></small>
+      <small>{% trans"Вже маєте акаунт?" %} <a href="{% url 'login' %}">{% trans "Увійти" %}</a></small>
     </footer>
   </article>
 </div>
@@ -60,8 +61,8 @@
   const u = document.getElementById("id_username");
   const p1 = document.getElementById("id_password1");
   const p2 = document.getElementById("id_password2");
-  if (u) u.placeholder = "Напр., mykola";
-  if (p1) p1.placeholder = "Мін. 8 символів";
-  if (p2) p2.placeholder = "Ще раз пароль";
+  if (u) u.placeholder = "{% trans "Напр., mykola" %}";
+  if (p1) p1.placeholder = "{% trans "Мін. 8 символів" %}";
+  if (p2) p2.placeholder = "{% trans "Ще раз пароль" %}";
 </script>
 {% endblock %}

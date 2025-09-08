@@ -1,19 +1,20 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
-<h1>Клієнти</h1>
+<h1>{% trans "Клієнти" %}</h1>
 
 <form method="get" class="grid" style="align-items:end; gap: 1rem;">
   <div>
-    <label for="q">Пошук</label>
-    <input id="q" type="search" name="q" value="{{ q }}" placeholder="Ім'я, телефон або email">
+    <label for="q">{% trans "Пошук" %}</label>
+    <input id="q" type="search" name="q" value="{{ q }}" placeholder="{% trans "Ім'я, телефон або email" %}">
   </div>
   <div>
-    <button type="submit">Знайти</button>
-    <a href="{% url 'client_list' %}" role="button" class="secondary">Скинути</a>
+    <button type="submit">{% trans "Знайти" %}</button>
+    <a href="{% url 'client_list' %}" role="button" class="secondary">{% trans "Скинути" %}</a>
   </div>
   <div style="text-align:right;">
     {% if user.is_staff or user.is_superuser %}
-      <a href="{% url 'client_create' %}" role="button">+ Новий клієнт</a>
+      <a href="{% url 'client_create' %}" role="button">+ {% trans "Новий клієнт" %}</a>
     {% endif %}
   </div>
 </form>
@@ -24,27 +25,27 @@
     <tr>
       <th>
         <a href="?q={{ q }}&sort={% if sort == 'name' %}-name{% elif sort == '-name' %}name{% else %}name{% endif %}">
-          Ім’я {% if sort == 'name' %}↑{% elif sort == '-name' %}↓{% else %}↕{% endif %}
+          {% trans "Ім’я" %} {% if sort == 'name' %}↑{% elif sort == '-name' %}↓{% else %}↕{% endif %}
         </a>
       </th>
       <th>
         <a href="?q={{ q }}&sort={% if sort == 'phone' %}-phone{% elif sort == '-phone' %}phone{% else %}phone{% endif %}">
-          Телефон {% if sort == 'phone' %}↑{% elif sort == '-phone' %}↓{% else %}↕{% endif %}
+          {% trans "Телефон" %} {% if sort == 'phone' %}↑{% elif sort == '-phone' %}↓{% else %}↕{% endif %}
         </a>
       </th>
       <th>
         <a href="?q={{ q }}&sort={% if sort == 'email' %}-email{% elif sort == '-email' %}email{% else %}email{% endif %}">
-          Email {% if sort == 'email' %}↑{% elif sort == '-email' %}↓{% else %}↕{% endif %}
+          {% trans "Email" %} {% if sort == 'email' %}↑{% elif sort == '-email' %}↓{% else %}↕{% endif %}
         </a>
       </th>
       <th>
         <a href="?q={{ q }}&sort={% if sort == 'deal' %}-deal{% elif sort == '-deal' %}deal{% else %}deal{% endif %}">
-          Угода {% if sort == 'deal' %}↑{% elif sort == '-deal' %}↓{% else %}↕{% endif %}
+          {% trans "Угода" %} {% if sort == 'deal' %}↑{% elif sort == '-deal' %}↓{% else %}↕{% endif %}
         </a>
       </th>
       <th>
         <a href="?q={{ q }}&sort={% if sort == 'created_at' %}-created_at{% elif sort == '-created_at' %}created_at{% else %}-created_at{% endif %}">
-          Створено {% if sort == 'created_at' %}↑{% elif sort == '-created_at' %}↓{% else %}↕{% endif %}
+          {% trans "Створено" %} {% if sort == 'created_at' %}↑{% elif sort == '-created_at' %}↓{% else %}↕{% endif %}
         </a>
       </th>
       {% if user.is_staff or user.is_superuser %}<th></th>{% endif %}
@@ -57,36 +58,40 @@
         <td>{{ c.phone|default:"—" }}</td>
         <td>{{ c.email|default:"—" }}</td>
         <td>
-          {% if c.deal_status == "done" %}✅ Завершено
-          {% elif c.deal_status == "active" %}🔄 Триває
-          {% elif c.deal_status == "pause" %}⏸️ Пауза
-          {% else %}❌ Немає
+          {% if c.deal_status == "done" %}{% trans "✅ Завершено" %}
+          {% elif c.deal_status == "active" %}{% trans "🔄 Триває" %}
+          {% elif c.deal_status == "pause" %}{% trans "⏸️ Пауза" %}
+          {% else %}{% trans "❌ Немає" %}
           {% endif %}
         </td>
         <td>{{ c.created_at|date:"Y-m-d H:i" }}</td>
         {% if user.is_staff or user.is_superuser %}
           <td style="white-space:nowrap">
-            <a href="{% url 'client_edit' c.pk %}">Редагувати</a> |
-            <a href="{% url 'client_delete' c.pk %}">Видалити</a>
+            <a href="{% url 'client_edit' c.pk %}">{% trans "Редагувати" %}</a> |
+            <a href="{% url 'client_delete' c.pk %}">{% trans "Видалити" %}</a>
           </td>
         {% endif %}
       </tr>
     {% empty %}
-      <tr><td colspan="6">Немає клієнтів</td></tr>
+      <tr><td colspan="6">{% trans "Немає клієнтів" %}</td></tr>
     {% endfor %}
   </tbody>
 </table>
 </div>
 
 {% if page_obj.paginator.num_pages > 1 %}
-<nav aria-label="Пагінація">
+<nav aria-label="{% trans 'Пагінація' %}">
   <ul>
     {% if page_obj.has_previous %}
-      <li><a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">Назад</a></li>
+      <li><a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.previous_page_number }}">{% trans "Назад" %}</a></li>
     {% endif %}
-    <li>Сторінка {{ page_obj.number }} з {{ page_obj.paginator.num_pages }}</li>
+    <li>
+      {% blocktrans with page=page_obj.number total=page_obj.paginator.num_pages %}
+        Сторінка {{ page }} з {{ total }}
+      {% endblocktrans %}
+    </li>
     {% if page_obj.has_next %}
-      <li><a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">Далі</a></li>
+      <li><a href="?q={{ q }}&sort={{ sort }}&page={{ page_obj.next_page_number }}">{% trans "Далі" %}</a></li>
     {% endif %}
   </ul>
 </nav>

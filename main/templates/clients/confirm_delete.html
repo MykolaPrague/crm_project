@@ -1,9 +1,13 @@
+{% load i18n %}
 {% extends "base.html" %}
 {% block content %}
-<h2>Видалити "{{ object }}"?</h2>
+<h2>  
+  {% blocktrans with obj=object %}
+    Видалити "{{ obj }}"?
+  {% endblocktrans %}</h2>
 <form method="post">
   {% csrf_token %}
-  <button type="submit">Так, видалити</button>
-  <a href="{% url 'client_list' %}" class="secondary" role="button">Скасувати</a>
+  <button type="submit">{% trans "Так, видалити" %}</button>
+  <a href="{% url 'client_list' %}" class="secondary" role="button">{% trans "Скасувати" %}</a>
 </form>
 {% endblock %}
