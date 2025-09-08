@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Видалити активність?</h2>
+<p><strong>{{ object.get_kind_display }} — {{ object.created_at|date:"Y-m-d H:i" }}</strong></p>
+<p>{{ object.notes|default:"(без приміток)" }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  <button type="submit">Так, видалити</button>
+  <a href="{% url 'dashboard' %}" class="secondary" role="button">Скасувати</a>
+</form>
+{% endblock %}

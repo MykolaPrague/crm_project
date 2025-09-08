@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Редагувати профіль: {{ emp.full_name }}</h1>
+
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+
+  <article class="grid">
+    <div>
+      <label>Ім’я</label> {{ form.first_name }}
+      <label>Прізвище</label> {{ form.last_name }}
+      <label>Стать</label> {{ form.gender }}
+      <label>Дата народження</label> {{ form.birth_date }}
+      <label>Місце народження</label> {{ form.birth_place }}
+      <label>Адреса реєстрації</label> {{ form.registration_address }}
+      <label>Сімейний стан</label> {{ form.marital_status }}
+    </div>
+
+    <div>
+      <label>Фото</label> {{ form.photo }}
+      <label>Файл контракту</label> {{ form.contract_file }}
+      <label>Дата прийому</label> {{ form.hire_date }}
+      <label>Дата звільнення</label> {{ form.termination_date }}
+      <label>Активний</label> {{ form.is_active }}
+      <label>Прогули (лічильник)</label> {{ form.absences_count }}
+    </div>
+  </article>
+
+  <div class="grid" style="margin-top:1rem;">
+    <button type="submit">Зберегти</button>
+    <a href="{% url 'employee_detail' emp.user.id %}" class="secondary" role="button">Скасувати</a>
+  </div>
+</form>
+{% endblock %}

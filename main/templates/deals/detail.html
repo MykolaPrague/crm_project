@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ deal.title }}</h1>
+<p>
+  <strong>Клієнт:</strong> <a href="{% url 'client_detail' deal.client.pk %}">{{ deal.client.name }}</a><br>
+  <strong>Сума:</strong> {{ deal.amount }}<br>
+  <strong>Статус:</strong>
+  {% if deal.status == "closed" %}✅ Закрито
+  {% elif deal.status == "in_progress" %}🔄 В роботі
+  {% else %}🆕 Новий
+  {% endif %}
+</p>
+
+{% if deal.notes %}
+  <article>
+    <header><strong>Нотатки</strong></header>
+    <p>{{ deal.notes|linebreaksbr }}</p>
+  </article>
+{% endif %}
+
+<hr>
+<h3>Вкладення</h3>
+
+{% if attachments %}
+<table>
+  <thead>
+    <tr>
+      <th>Файл</th>
+      <th>Завантажено</th>
+      <th>Ким</th>
+      {% if user.is_staff or user.is_superuser %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in attachments %}
+      <tr>
+        <td><a href="{{ a.file.url }}" target="_blank" rel="noopener">{{ a.filename }}</a></td>
+        <td>{{ a.uploaded_at|date:"Y-m-d H:i" }}</td>
+        <td>{{ a.uploaded_by|default:"—" }}</td>
+        {% if user.is_staff or user.is_superuser %}
+          <td>
+            <form method="post" action="{% url 'deal_attachment_delete' a.pk %}">
+              {% csrf_token %}
+              <button type="submit" class="secondary">Видалити</button>
+            </form>
+          </td>
+        {% endif %}
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+  <p>Файлів поки немає.</p>
+{% endif %}
+
+{% if user.is_staff or user.is_superuser %}
+  <form method="post" action="{% url 'deal_attachment_upload' deal.pk %}" enctype="multipart/form-data" style="margin-top:1rem">
+    {% csrf_token %}
+    <label>Додати файл</label>
+    {{ form.file }}
+    <button type="submit">Завантажити</button>
+  </form>
+{% endif %}
+
+<div style="margin-top:1rem">
+  <a href="{% url 'client_detail' deal.client.pk %}" role="button" class="secondary">← До клієнта</a>
+</div>
+{% endblock %}

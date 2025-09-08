@@ -1,0 +1,22 @@
+body {
+    margin: 0;
+    height: 100vh;
+    background: url("/static/main/images/background.png") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.overlay {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0,0,0,0.4);
+}
+
+.welcome-box {
+    background: rgba(58, 73, 129, 0.459);
+    padding: 3rem;
+    border-radius: 1rem;
+    text-align: center;
+    max-width: 500px;
+}

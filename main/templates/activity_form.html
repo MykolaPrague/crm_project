@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ title }}</h1>
+<form method="post">
+  {% csrf_token %}
+  <div class="grid">
+    <div>
+      <label>Тип</label>
+      {{ form.kind }}
+    </div>
+    <div>
+      <label>Тривалість (хв)</label>
+      {{ form.duration_min }}
+    </div>
+    <div class="col-12">
+      <label>Нотатки</label>
+      {{ form.notes }}
+    </div>
+  </div>
+  <br>
+  <button type="submit">Зберегти</button>
+  <a href="{% url 'dashboard' %}" class="secondary" role="button">Скасувати</a>
+</form>
+{% endblock %}

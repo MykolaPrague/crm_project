@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="auth-wrap">
+  <article class="auth-card">
+    <header style="text-align:center;">
+      <span style="font-size:2rem;">📝</span>
+      <h1 style="margin:0">Реєстрація</h1>
+      <p style="margin:0;color:var(--muted-color)">Створіть обліковий запис, щоб увійти до CRM</p>
+    </header>
+
+    {% if form.non_field_errors %}
+      <div role="alert" style="margin-top:1rem;">
+        {% for err in form.non_field_errors %}
+          <p>{{ err }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <form method="post" style="margin-top:1rem;">
+      {% csrf_token %}
+
+      <label for="{{ form.username.id_for_label }}">Логін</label>
+      {{ form.username }}
+      {% if form.username.errors %}
+        <small role="alert">
+          {% for e in form.username.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+        </small>
+      {% endif %}
+
+      <label for="{{ form.password1.id_for_label }}">Пароль</label>
+      {{ form.password1 }}
+      {% if form.password1.help_text %}
+        <small>{{ form.password1.help_text|safe }}</small>
+      {% endif %}
+      {% if form.password1.errors %}
+        <small role="alert">
+          {% for e in form.password1.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+        </small>
+      {% endif %}
+
+      <label for="{{ form.password2.id_for_label }}">Підтвердіть пароль</label>
+      {{ form.password2 }}
+      {% if form.password2.errors %}
+        <small role="alert">
+          {% for e in form.password2.errors %}{{ e }}{% if not forloop.last %}<br>{% endif %}{% endfor %}
+        </small>
+      {% endif %}
+
+      <button type="submit" style="width:100%; margin-top:1rem;">Зареєструватися</button>
+    </form>
+
+    <footer style="margin-top:1rem; text-align:center;">
+      <small>Вже маєте акаунт? <a href="{% url 'login' %}">Увійти</a></small>
+    </footer>
+  </article>
+</div>
+
+<script>
+  // легкі підказки у полях
+  const u = document.getElementById("id_username");
+  const p1 = document.getElementById("id_password1");
+  const p2 = document.getElementById("id_password2");
+  if (u) u.placeholder = "Напр., mykola";
+  if (p1) p1.placeholder = "Мін. 8 символів";
+  if (p2) p2.placeholder = "Ще раз пароль";
+</script>
+{% endblock %}

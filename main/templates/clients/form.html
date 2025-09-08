@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="auth-card" style="max-width:640px;margin:auto;">
+  <header><h1 style="margin:0">{{ title }}</h1></header>
+
+  <form method="post">
+    {% csrf_token %}
+    <label>Ім’я</label>
+    {{ form.name }}
+
+    <label>Телефон</label>
+    {{ form.phone }}
+
+    <label>Email</label>
+    {{ form.email }}
+
+    <label>Нотатки</label>
+    {{ form.notes }}
+
+    <label>Статус угоди</label>
+    {{ form.deal_status }}
+
+
+    <div style="margin-top:1rem">
+      <button type="submit">Зберегти</button>
+      <a href="{% url 'client_list' %}" role="button" class="secondary">Скасувати</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

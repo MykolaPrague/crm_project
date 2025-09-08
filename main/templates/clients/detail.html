@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>{{ client.name }}</h1>
+<p>
+  <strong>Телефон:</strong> {{ client.phone|default:"—" }}<br>
+  <strong>Email:</strong> {{ client.email|default:"—" }}<br>
+  <strong>Статус угоди:</strong>
+  {% if client.deal_status == "done" %}✅ Завершено
+  {% elif client.deal_status == "active" %}🔄 Триває
+  {% elif client.deal_status == "pause" %}⏸️ Пауза
+  {% else %}❌ Немає
+  {% endif %}
+</p>
+
+<div class="grid" style="margin-bottom:1rem;">
+  <a href="{% url 'client_list' %}" role="button" class="secondary">← До списку</a>
+  {% if user.is_staff or user.is_superuser %}
+    <a href="{% url 'deal_create_for_client' client.pk %}" role="button">+ Нова угода</a>
+    <a href="{% url 'client_edit' client.pk %}" role="button" class="contrast">Редагувати клієнта</a>
+  {% endif %}
+</div>
+
+<h3>Угоди</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Назва</th>
+      <th>Сума</th>
+      <th>Статус</th>
+      <th>Створено</th>
+      {% if user.is_staff or user.is_superuser %}<th></th>{% endif %}
+    </tr>
+  </thead>
+  <tbody>
+    {% for d in deals %}
+      <tr>
+        <td><a href="{% url 'deal_detail' d.pk %}">{{ d.title }}</a></td>
+        <td>{{ d.amount }}</td>
+        <td>
+          {% if user.is_staff or user.is_superuser %}
+            <form method="post" action="{% url 'deal_change_status' d.pk %}">
+              {% csrf_token %}
+              <select name="status" onchange="this.form.submit()">
+                <option value="new" {% if d.status == "new" %}selected{% endif %}>🆕 Новий</option>
+                <option value="in_progress" {% if d.status == "in_progress" %}selected{% endif %}>🔄 В роботі</option>
+                <option value="closed" {% if d.status == "closed" %}selected{% endif %}>✅ Закрито</option>
+              </select>
+            </form>
+          {% else %}
+            {% if d.status == "closed" %}✅ Закрито
+            {% elif d.status == "in_progress" %}🔄 В роботі
+            {% else %}🆕 Новий
+            {% endif %}
+          {% endif %}
+        </td>
+        <td>{{ d.created_at|date:"Y-m-d H:i" }}</td>
+        {% if user.is_staff or user.is_superuser %}
+          <td style="white-space:nowrap">
+            <a href="{% url 'deal_edit' d.pk %}">Редагувати</a> |
+            <a href="{% url 'deal_delete' d.pk %}">Видалити</a>
+          </td>
+        {% endif %}
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Угод поки немає</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

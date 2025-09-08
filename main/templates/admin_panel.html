@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Адмін-панель</h1>
+<p>Лише для суперкористувачів.</p>
+
+<section class="grid">
+  <article>
+    <header><strong>Користувачі</strong></header>
+    <p>Всього: {{ total_users }}</p>
+    <p>Із правами staff (менеджери): {{ staff_count }}</p>
+  </article>
+  <article>
+    <header><strong>Співробітники</strong></header>
+    <p>Активних профілів: {{ active_employees }}</p>
+  </article>
+  <article>
+    <header><strong>Активності</strong></header>
+    <p>За тиждень: {{ activities_last_week }}</p>
+  </article>
+</section>
+<h3>Співробітники</h3>
+
+<table>
+  <thead><tr><th>Юзер</th><th>Посада</th><th>Відділ</th><th>Статус</th><th>Дата найму</th></tr></thead>
+  <tbody>
+    {% for e in employees %}
+      <tr>
+        <td>
+          <a href="{% url 'employee_detail' e.user.id %}">{{ e.user.username }}</a>
+        </td>
+        <td>{{ e.position|default:"—" }}</td>
+        <td>{{ e.department|default:"—" }}</td>
+        <td>{% if e.is_active %}Активний{% else %}Неактивний{% endif %}</td>
+        <td>{{ e.hired_at|date:"Y-m-d"|default:"—" }}</td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5">Поки немає співробітників</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Топ активних (30 днів)</h3>
+<table>
+  <thead><tr><th>Користувач</th><th>Активностей</th></tr></thead>
+  <tbody>
+    {% for row in top_active %}
+      <tr><td>{{ row.user__username }}</td><td>{{ row.total }}</td></tr>
+    {% empty %}
+      <tr><td colspan="2">Немає даних</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h3>Оцінки роботи (середній бал)</h3>
+<table>
+  <thead><tr><th>Користувач</th><th>Середній бал</th><th>К-сть оцінок</th></tr></thead>
+  <tbody>
+    {% for row in latest_reviews %}
+      <tr><td>{{ row.user__username }}</td><td>{{ row.avg_score|floatformat:1 }}</td><td>{{ row.count }}</td></tr>
+    {% empty %}
+      <tr><td colspan="3">Немає даних</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endblock %}

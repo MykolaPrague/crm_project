@@ -1,0 +1,182 @@
+{% extends "base.html" %} {% block content %}
+<h1>Вітаю, {{ user.username }} 👋</h1>
+<p>Це ваша панель керування.</p>
+
+<div class="grid">
+  {% if user.is_superuser %}
+  <article>
+    <header><strong>Адмін-інструменти</strong></header>
+    <p>Зведена статистика, налаштування, оцінки співробітників.</p>
+    <footer>
+      <a href="{% url 'admin_panel' %}" role="button">Адмін-панель</a>
+    </footer>
+  {% if user.is_superuser %}
+    <h3>Загальна статистика (адмін)</h3>
+    <p>За 7 днів: <strong>{{ all_week_count|default:"0" }}</strong></p>
+    <p>Всього активностей: <strong>{{ all_total|default:"0" }}</strong></p>
+  </article>
+  {% endif %} {% if user.is_staff and not user.is_superuser %}
+  <article>
+    <header><strong>Панель менеджера</strong></header>
+    <p>Короткі метрики команди та швидкі дії.</p>
+    <footer><a href="#" role="button">Відкрити розділ</a></footer>
+  </article>
+  {% endif %}
+
+</div>
+
+
+<section class="grid" style="margin-block:1rem;">
+  <article>
+    <header><strong>Клієнтів за 30 днів</strong></header>
+    <h3 style="margin:0">{{ clients_last_month }}</h3>
+  </article>
+  <article>
+    <header><strong>Угод (всього)</strong></header>
+    <h3 style="margin:0">{{ deals_total }}</h3>
+  </article>
+  <article>
+    <header><strong>Продажі (закриті), ₴</strong></header>
+    <h3 style="margin:0">{{ sales_sum }}</h3>
+  </article>
+</section>
+
+<article>
+  <header><strong>Динаміка: нові клієнти та сума закритих угод</strong></header>
+  <canvas id="crmChart" height="110"></canvas>
+</article>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  const labels = {{ chart_labels_json|safe }};
+  const dataClients = {{ chart_clients_json|safe }};
+  const dataSales = {{ chart_sales_json|safe }};
+
+  const ctx = document.getElementById('crmChart').getContext('2d');
+  new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Нові клієнти',
+          data: dataClients,
+          tension: 0.3,
+        },
+        {
+          label: 'Сума закритих угод',
+          data: dataSales,
+          yAxisID: 'y1',
+          tension: 0.3,
+        }
+      ]
+    },
+    options: {
+      responsive: true,
+      interaction: { mode: 'index', intersect: false },
+      stacked: false,
+      scales: {
+        y: { beginAtZero: true, title: { display: true, text: 'Клієнти' } },
+        y1: {
+          beginAtZero: true,
+          position: 'right',
+          title: { display: true, text: 'Продажі' },
+          grid: { drawOnChartArea: false }
+        }
+      }
+    }
+  });
+</script>
+<hr />
+<div class="grid">
+  <article>
+    <header><strong>Мої задачі / угоди</strong></header>
+    <p>Ваші останні активності та швидкі посилання.</p>
+    {% comment %} <footer><a href="#" role="button">Перейти</a></footer> {% endcomment %}
+    <hr />
+    <p>
+      <a href="{% url 'activity_create' %}" role="button">+ Додати активність</a>
+    </p>
+
+  </article>
+</div>
+
+<hr />
+<form method="get" class="grid" style="align-items:end; gap: 1rem;">
+  <div>
+    <label for="kind">Тип</label>
+    <select name="kind" id="kind">
+      <option value="" {% if not filter_kind %}selected{% endif %}>Будь-який</option>
+      <option value="call"  {% if filter_kind == "call" %}selected{% endif %}>Дзвінок</option>
+      <option value="meet"  {% if filter_kind == "meet" %}selected{% endif %}>Зустріч</option>
+      <option value="deal"  {% if filter_kind == "deal" %}selected{% endif %}>Угода</option>
+      <option value="task"  {% if filter_kind == "task" %}selected{% endif %}>Завдання</option>
+      <option value="other" {% if filter_kind == "other" %}selected{% endif %}>Інше</option>
+    </select>
+  </div>
+
+  <div>
+    <label for="from">Від дати</label>
+    <input type="date" id="from" name="from" value="{{ filter_from }}">
+  </div>
+
+  <div>
+    <label for="to">До дати</label>
+    <input type="date" id="to" name="to" value="{{ filter_to }}">
+  </div>
+
+  <div>
+    <label for="sort">Сортування</label>
+    <select name="sort" id="sort">
+      <option value="-created_at" {% if sort == "-created_at" %}selected{% endif %}>Нові спочатку</option>
+      <option value="created_at"  {% if sort == "created_at" %}selected{% endif %}>Старі спочатку</option>
+      <option value="-duration_min" {% if sort == "-duration_min" %}selected{% endif %}>Довші спочатку</option>
+      <option value="duration_min"  {% if sort == "duration_min" %}selected{% endif %}>Коротші спочатку</option>
+    </select>
+  </div>
+
+  <div class="grid">
+    <button type="submit">Застосувати</button>
+    <button type="button" onclick="window.location.href='{% url 'dashboard' %}'" class="secondary">
+      Скинути
+    </button>
+  </div>
+
+</form>
+
+<h3>Мої активності</h3>
+<p>Сьогодні: <strong>{{ my_today_count }}</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Тип</th>
+      <th>Тривалість (хв)</th>
+      <th>Нотатки</th>
+      <th>Дата</th>
+      <th>Дії</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in my_latest_activities %}
+    <tr>
+      <td>{{ a.get_kind_display }}</td>
+      <td>{{ a.duration_min }}</td>
+      <td>{{ a.notes|default:"—" }}</td>
+      <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+      <td style="white-space:nowrap">
+        <a href="{% url 'activity_edit' a.pk %}">Редагувати</a>
+        &nbsp;|&nbsp;
+        <a href="{% url 'activity_delete' a.pk %}">Видалити</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4">Поки немає активностей</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% endif %} 
+{% endblock %}

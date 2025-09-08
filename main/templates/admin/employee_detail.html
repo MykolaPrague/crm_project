@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Картка співробітника</h1>
+
+<article class="grid">
+  <div>
+    <figure>
+      {% if emp.photo %}
+        <img src="{{ emp.photo.url }}" alt="Фото" style="max-width:220px;border-radius:12px;">
+      {% else %}
+        <img src="https://placehold.co/220x220?text=No+Photo" alt="Фото" style="border-radius:12px;">
+      {% endif %}
+      <figcaption>{{ emp.full_name }}</figcaption>
+    </figure>
+
+    <p><strong>Обліковий запис:</strong> {{ emp.user.username }}</p>
+    <p><strong>Статус:</strong> {% if emp.is_active %}Активний{% else %}Неактивний{% endif %}</p>
+    <p><strong>Прогули (лічильник):</strong> {{ emp.absences_count }}</p>
+
+    <div style="margin-top:1rem">
+      <a href="{% url 'employee_edit' emp.user.id %}" role="button">Редагувати</a>
+    </div>
+  </div>
+
+  <div>
+    <h3>Особисті дані</h3>
+    <p>
+      <strong>Ім’я:</strong> {{ emp.first_name|default:"—" }}<br>
+      <strong>Прізвище:</strong> {{ emp.last_name|default:"—" }}<br>
+      <strong>Стать:</strong>
+      {% if emp.gender == "m" %}Чоловіча{% elif emp.gender == "f" %}Жіноча{% else %}Інше/Не вказано{% endif %}<br>
+      <strong>Дата народження:</strong> {{ emp.birth_date|date:"Y-m-d"|default:"—" }}<br>
+      <strong>Місце народження:</strong> {{ emp.birth_place|default:"—" }}<br>
+      <strong>Адреса реєстрації:</strong> {{ emp.registration_address|default:"—" }}<br>
+      <strong>Сімейний стан:</strong>
+      {% if emp.marital_status == "married" %}Одружений/заміжня
+      {% elif emp.marital_status == "divorced" %}Розлучений/розлучена
+      {% elif emp.marital_status == "widowed" %}Вдівець/вдова
+      {% else %}Вільний/вільна{% endif %}
+    </p>
+
+    <h3>Робота</h3>
+    <p>
+      <strong>Дата прийому:</strong> {{ emp.hire_date|date:"Y-m-d"|default:"—" }}<br>
+      <strong>Дата звільнення:</strong> {{ emp.termination_date|date:"Y-m-d"|default:"—" }}
+    </p>
+
+    <h3>Документи</h3>
+    <p>
+      {% if emp.contract_file %}
+        <a href="{{ emp.contract_file.url }}" target="_blank" rel="noopener">📄 Контракт</a>
+      {% else %}
+        — Немає
+      {% endif %}
+    </p>
+  </div>
+</article>
+
+<p style="margin-top:1rem;">
+  <a href="{% url 'admin_panel' %}" class="secondary" role="button">← До адмін-панелі</a>
+</p>
+{% endblock %}

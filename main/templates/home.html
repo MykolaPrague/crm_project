@@ -1,6 +1,23 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<h1>Привіт! Це твій CRM</h1>
-<p>Тиждень 1 — стартуємо 🚀</p>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Ласкаво просимо</title>
+    <!-- Pico -->
+    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
+    <link rel="stylesheet" href="{% static 'main/css/home.css' %}">
+</head>
+<body>
+    <main class="container-fluid overlay">
+        <section class="welcome-box">
+            <h1>Ласкаво просимо до CRM</h1>
+            <p>Увійдіть або зареєструйтесь, щоб почати працювати</p>
+            <div class="grid">
+                <a href="{% url 'login' %}" role="button" class="contrast">Увійти</a>
+                <a href="{% url 'register' %}" role="button">Реєстрація</a>
+            </div>
+        </section>
+    </main>
+</body>
+</html>

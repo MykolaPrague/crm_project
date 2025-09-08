@@ -1,14 +1,63 @@
 <!DOCTYPE html>
 <html lang="uk">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>CRM</title>
-    <link rel="stylesheet" href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css">
-</head>
-<body>
-    <main class="container">
-        {% block content %}{% endblock %}
-    </main>
-</body>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css"
+    />
+    <style>
+      .auth-wrap {
+        min-height: 100dvh;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+      }
+      .auth-card {
+        max-width: 420px;
+        width: 100%;
+      }
+      .table-wrap { overflow-x: auto; }
+      table { white-space: nowrap; }
+      th a {
+        text-decoration: none;
+        color: inherit;
+      }
+      th a:hover {
+        text-decoration: underline;
+      }
+      th a {
+        cursor: pointer; /* рука на десктопі */
+      }
+    </style>
+  </head>
+  <body>
+    {% if request.resolver_match.url_name != 'home' %}
+        <nav>
+            <ul>
+                <li><a href="{% url 'client_list' %}">Клієнти</a></li>
+                <li><a href="{% url 'dashboard' %}">Dashboard</a></li>
+                {% if request.user.is_superuser %}
+                    <li><a href="{% url 'admin_panel' %}">Адмін-панель</a></li>
+                {% endif %}
+                {% if request.user.is_authenticated %}
+                    <li><a href="{% url 'logout' %}">Вийти</a></li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Увійти</a></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+    {% if messages %}
+    <div>
+      {% for message in messages %}
+      <p>{{ message }}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+
+    <main class="container">{% block content %}{% endblock %}</main>
+  </body>
 </html>

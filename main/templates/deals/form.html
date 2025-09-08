@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="auth-card" style="max-width:640px;margin:auto;">
+  <header><h1 style="margin:0">{{ title }}</h1></header>
+
+  <form method="post">
+    {% csrf_token %}
+
+    {% if form.client.errors %}<small role="alert">{{ form.client.errors }}</small>{% endif %}
+    <label>Клієнт</label>
+    {{ form.client }}
+
+    <label>Назва</label>
+    {{ form.title }}
+
+    <label>Сума</label>
+    {{ form.amount }}
+
+    <label>Статус</label>
+    {{ form.status }}
+
+    <label>Нотатки</label>
+    {{ form.notes }}
+
+    <div style="margin-top:1rem">
+      <button type="submit">Зберегти</button>
+      <a href="{% url 'client_list' %}" role="button" class="secondary">Скасувати</a>
+    </div>
+  </form>
+</article>
+{% endblock %}

@@ -41,3 +41,82 @@ git remote add origin github.com/MykolaPrague/crm_project.git
 github.com/MykolaPrague/crm_project.git
 >> git branch -M main
 >> git push -u origin main
+
+✅ Після цього, якщо відкриєш свій репозиторій у браузері,
+ побачиш усі файли CRM.
+
+    
+    7.Створи у корені проєкту project_CMR файл з назвою:
+
+
+.gitignore
+І встав у нього такий вміст:
+
+bash
+Копіювати
+Редагувати
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Django
+*.log
+*.pot
+*.pyc
+db.sqlite3
+media/
+
+# Virtual environment
+venv/
+env/
+ENV/
+*.env
+
+# VS Code / PyCharm
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+    8.Після створення .gitignore зроби так:
+
+
+git rm -r --cached .
+git add .
+git commit -m "Доданий .gitignore"
+git push
+Це оновить репозиторій, прибравши зайве.
+
+
+комітити через GitHub Desktop — це  простіше,
+ ніж у терміналі, особливо для швидких змін.
+
+
+
+1️⃣ Відкрити проєкт у GitHub Desktop
+Запусти GitHub Desktop
+
+Обери File → Add Local Repository
+
+Вкажи шлях до своєї папки project_CMR
+
+Тисни Add Repository
+
+2️⃣ Робити коміти
+У вікні GitHub Desktop ти побачиш список змінених файлів.
+
+Відміть файли, які хочеш додати в коміт.
+
+У полі Summary напиши короткий опис змін 
+(наприклад: Додав сторінку клієнтів).
+
+Натисни Commit to main.
+
+3️⃣ Надсилати зміни на GitHub
+Після коміту натисни кнопку Push origin 
+(або Push to GitHub) у верхній панелі.
+
+Тепер зміни з’являться у твоєму репозиторії онлайн.
