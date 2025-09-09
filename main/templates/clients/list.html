@@ -1,5 +1,5 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
 {% block content %}
 <h1>{% trans "Клієнти" %}</h1>
 
@@ -8,10 +8,13 @@
     <label for="q">{% trans "Пошук" %}</label>
     <input id="q" type="search" name="q" value="{{ q }}" placeholder="{% trans "Ім'я, телефон або email" %}">
   </div>
-  <div>
+  <div class="grid">
     <button type="submit">{% trans "Знайти" %}</button>
-    <a href="{% url 'client_list' %}" role="button" class="secondary">{% trans "Скинути" %}</a>
+    <button type="button" onclick="window.location.href='{% url 'client_list' %}'" class="secondary">
+      {% trans "Скинути" %}
+    </button>
   </div>
+
   <div style="text-align:right;">
     {% if user.is_staff or user.is_superuser %}
       <a href="{% url 'client_create' %}" role="button">+ {% trans "Новий клієнт" %}</a>

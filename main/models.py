@@ -186,13 +186,13 @@ class DealAttachment(models.Model):
     def __str__(self):
         return f"{self.deal} · {self.filename()}"
     
-class Client(models.Model):
-    name = models.CharField(_("Name"), max_length=150)
-    notes = models.TextField(_("Notes"), blank=True)
+# class Client(models.Model):
+#     name = models.CharField(_("Name"), max_length=150)
+#     notes = models.TextField(_("Notes"), blank=True)
 
-    DEAL_CHOICES = [
-        ("none", _("—")),
-        ("active", _("In progress")),
-        ("pause", _("Paused")),
-        ("done",  _("Closed")),
-    ]
+#     DEAL_CHOICES = [
+#         ("none", _("—")),
+#         ("active", _("In progress")),
+#         ("pause", _("Paused")),
+#         ("done",  _("Closed")),
+#     ]

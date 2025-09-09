@@ -1,5 +1,5 @@
-{% load i18n %}
 {% extends "base.html" %}
+{% load i18n %}
 {% block content %}
 <h1>{% trans "Картка співробітника" %}</h1>
 
@@ -50,9 +50,8 @@
     <p>
       {% if emp.contract_file %}
         <a href="{{ emp.contract_file.url }}" target="_blank" rel="noopener">{% trans "📄 Контракт" %}</a>
-      {% else %}{% trans "
-        — Немає
-      " %}{% endif %}
+      {% else %}{% trans "— Немає" %}
+      {% endif %}
     </p>
   </div>
 </article>

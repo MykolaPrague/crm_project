@@ -1,0 +1,849 @@
+# CRM translations — Czech
+# Mykola «CENAKUP» <koljaxp@gmail.com>, 2025.
+msgid ""
+msgstr ""
+"Project-Id-Version: CRM 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-09 02:30+0200\n"
+"PO-Revision-Date: 2025-09-09 03:25+0200\n"
+"Last-Translator: Mykola «CENAKUP» <koljaxp@gmail.com>\n"
+"Language-Team: Czech\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n <= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: .\accounts\templates\accounts\login.html:7
+msgid "Вхід у CRM"
+msgstr "Přihlášení do CRM"
+
+#: .\accounts\templates\accounts\login.html:8
+msgid "Раді вас бачити 👋"
+msgstr "Rádi vás vidíme 👋"
+
+#: .\accounts\templates\accounts\login.html:22
+#: .\accounts\templates\accounts\register.html:23
+msgid "Логін"
+msgstr "Přihlašovací jméno"
+
+#: .\accounts\templates\accounts\login.html:30
+#: .\accounts\templates\accounts\register.html:31
+msgid "Пароль"
+msgstr "Heslo"
+
+#: .\accounts\templates\accounts\login.html:41
+msgid "Запам’ятати мене"
+msgstr "Zapamatovat si mě"
+
+#: .\accounts\templates\accounts\login.html:45
+msgid "Забули пароль?"
+msgstr "Zapomněli jste heslo?"
+
+#: .\accounts\templates\accounts\login.html:49
+#: .\accounts\templates\accounts\register.html:54 .\main\templates\base.html:36
+#: .\main\templates\home.html:18
+msgid "Увійти"
+msgstr "Přihlásit se"
+
+#: .\accounts\templates\accounts\login.html:53
+msgid "Немає акаунта?"
+msgstr "Nemáte účet?"
+
+#: .\accounts\templates\accounts\login.html:53
+#: .\accounts\templates\accounts\register.html:50
+msgid "Зареєструватися"
+msgstr "Zaregistrovat se"
+
+#: .\accounts\templates\accounts\register.html:8 .\main\templates\home.html:19
+msgid "Реєстрація"
+msgstr "Registrace"
+
+#: .\accounts\templates\accounts\register.html:9
+msgid "Створіть обліковий запис, щоб увійти до CRM"
+msgstr "Vytvořte si účet pro přístup do CRM"
+
+#: .\accounts\templates\accounts\register.html:42
+msgid "Підтвердіть пароль"
+msgstr "Potvrďte heslo"
+
+#: .\accounts\templates\accounts\register.html:64
+msgid "Напр., mykola"
+msgstr "Např. mykola"
+
+#: .\accounts\templates\accounts\register.html:65
+msgid "Мін. 8 символів"
+msgstr "Min. 8 znaků"
+
+#: .\accounts\templates\accounts\register.html:66
+msgid "Ще раз пароль"
+msgstr "Heslo znovu"
+
+#: .\main\models.py:190
+msgid "Name"
+msgstr "Jméno"
+
+#: .\main\models.py:191
+msgid "Notes"
+msgstr "Poznámky"
+
+#: .\main\models.py:194
+msgid "—"
+msgstr "—"
+
+#: .\main\models.py:195
+msgid "In progress"
+msgstr "Probíhá"
+
+#: .\main\models.py:196
+msgid "Paused"
+msgstr "Pozastaveno"
+
+#: .\main\models.py:197
+msgid "Closed"
+msgstr "Uzavřeno"
+
+#: .\main\templates\activity_form.html:9 .\main\templates\dashboard.html:107
+#: .\main\templates\dashboard.html:152
+msgid "Тип"
+msgstr "Typ"
+
+#: .\main\templates\activity_form.html:13 .\main\templates\dashboard.html:153
+msgid "Тривалість (хв)"
+msgstr "Délka (min)"
+
+#: .\main\templates\activity_form.html:17 .\main\templates\clients\form.html:18
+#: .\main\templates\dashboard.html:154 .\main\templates\deals\detail.html:17
+#: .\main\templates\deals\form.html:23
+msgid "Нотатки"
+msgstr "Poznámky"
+
+#: .\main\templates\activity_form.html:22
+#: .\main\templates\admin\employee_form.html:31
+#: .\main\templates\clients\form.html:26 .\main\templates\deals\form.html:27
+msgid "Зберегти"
+msgstr "Uložit"
+
+#: .\main\templates\activity_form.html:23
+#: .\main\templates\admin\employee_form.html:32
+#: .\main\templates\clients\confirm_delete.html:11
+#: .\main\templates\clients\form.html:27
+#: .\main\templates\confirm_delete.html:11 .\main\templates\deals\form.html:28
+msgid "Скасувати"
+msgstr "Zrušit"
+
+#: .\main\templates\admin\employee_detail.html:4
+msgid "Картка співробітника"
+msgstr "Karta zaměstnance"
+
+#: .\main\templates\admin\employee_detail.html:17
+msgid "Обліковий запис:"
+msgstr "Uživatelský účet:"
+
+#: .\main\templates\admin\employee_detail.html:18
+#: .\main\templates\deals\detail.html:8
+msgid "Статус:"
+msgstr "Stav:"
+
+#: .\main\templates\admin\employee_detail.html:18
+#: .\main\templates\admin\employee_form.html:25
+#: .\main\templates\admin_panel.html:54
+msgid "Активний"
+msgstr "Aktivní"
+
+#: .\main\templates\admin\employee_detail.html:18
+#: .\main\templates\admin_panel.html:54
+msgid "Неактивний"
+msgstr "Neaktivní"
+
+#: .\main\templates\admin\employee_detail.html:19
+msgid "Прогули (лічильник):"
+msgstr "Absence (počet):"
+
+#: .\main\templates\admin\employee_detail.html:22
+#: .\main\templates\clients\detail.html:60
+#: .\main\templates\clients\list.html:70 .\main\templates\dashboard.html:167
+msgid "Редагувати"
+msgstr "Upravit"
+
+#: .\main\templates\admin\employee_detail.html:27
+msgid "Особисті дані"
+msgstr "Osobní údaje"
+
+#: .\main\templates\admin\employee_detail.html:29
+msgid "Ім’я:"
+msgstr "Jméno:"
+
+#: .\main\templates\admin\employee_detail.html:30
+msgid "Прізвище:"
+msgstr "Příjmení:"
+
+#: .\main\templates\admin\employee_detail.html:31
+msgid "Стать:"
+msgstr "Pohlaví:"
+
+#: .\main\templates\admin\employee_detail.html:32
+msgid "Чоловіча"
+msgstr "Muž"
+
+#: .\main\templates\admin\employee_detail.html:32
+msgid "Жіноча"
+msgstr "Žena"
+
+#: .\main\templates\admin\employee_detail.html:32
+msgid "Інше/Не вказано"
+msgstr "Jiné/Neuvedeno"
+
+#: .\main\templates\admin\employee_detail.html:33
+msgid "Дата народження:"
+msgstr "Datum narození:"
+
+#: .\main\templates\admin\employee_detail.html:34
+msgid "Місце народження:"
+msgstr "Místo narození:"
+
+#: .\main\templates\admin\employee_detail.html:35
+msgid "Адреса реєстрації:"
+msgstr "Adresa trvalého pobytu:"
+
+#: .\main\templates\admin\employee_detail.html:36
+msgid "Сімейний стан:"
+msgstr "Rodinný stav:"
+
+#: .\main\templates\admin\employee_detail.html:37
+msgid "Одружений/заміжня"
+msgstr "Ženatý/Vdaná"
+
+#: .\main\templates\admin\employee_detail.html:38
+msgid "Розлучений/розлучена"
+msgstr "Rozvedený/Rozvedená"
+
+#: .\main\templates\admin\employee_detail.html:39
+msgid "Вдівець/вдова"
+msgstr "Vdovec/Vdova"
+
+#: .\main\templates\admin\employee_detail.html:40
+msgid "Вільний/вільна"
+msgstr "Svobodný/Svobodná"
+
+#: .\main\templates\admin\employee_detail.html:43
+msgid "Робота"
+msgstr "Práce"
+
+#: .\main\templates\admin\employee_detail.html:45
+msgid "Дата прийому:"
+msgstr "Datum nástupu:"
+
+#: .\main\templates\admin\employee_detail.html:46
+msgid "Дата звільнення:"
+msgstr "Datum ukončení:"
+
+#: .\main\templates\admin\employee_detail.html:49
+msgid "Документи"
+msgstr "Dokumenty"
+
+#: .\main\templates\admin\employee_detail.html:52
+msgid "📄 Контракт"
+msgstr "📄 Smlouva"
+
+#: .\main\templates\admin\employee_detail.html:53
+msgid "— Немає"
+msgstr "— Není"
+
+#: .\main\templates\admin\employee_detail.html:60
+msgid "← До адмін-панелі"
+msgstr "← Zpět na admin panel"
+
+#: .\main\templates\admin\employee_form.html:4
+msgid "Редагувати профіль: "
+msgstr "Upravit profil: "
+
+#: .\main\templates\admin\employee_form.html:11
+#: .\main\templates\clients\form.html:9 .\main\templates\clients\list.html:28
+msgid "Ім’я"
+msgstr "Jméno"
+
+#: .\main\templates\admin\employee_form.html:12
+msgid "Прізвище"
+msgstr "Příjmení"
+
+#: .\main\templates\admin\employee_form.html:13
+msgid "Стать"
+msgstr "Pohlaví"
+
+#: .\main\templates\admin\employee_form.html:14
+msgid "Дата народження"
+msgstr "Datum narození"
+
+#: .\main\templates\admin\employee_form.html:15
+msgid "Місце народження"
+msgstr "Místo narození"
+
+#: .\main\templates\admin\employee_form.html:16
+msgid "Адреса реєстрації"
+msgstr "Adresa trvalého pobytu"
+
+#: .\main\templates\admin\employee_form.html:17
+msgid "Сімейний стан"
+msgstr "Rodinný stav"
+
+#: .\main\templates\admin\employee_form.html:21
+msgid "Фото"
+msgstr "Fotografie"
+
+#: .\main\templates\admin\employee_form.html:22
+msgid "Файл контракту"
+msgstr "Soubor smlouvy"
+
+#: .\main\templates\admin\employee_form.html:23
+#: .\main\templates\admin_panel.html:40
+msgid "Дата прийому"
+msgstr "Datum nástupu"
+
+#: .\main\templates\admin\employee_form.html:24
+#: .\main\templates\admin_panel.html:41
+msgid "Дата звільнення"
+msgstr "Datum ukončení"
+
+#: .\main\templates\admin\employee_form.html:26
+msgid "Прогули (лічильник)"
+msgstr "Absence (počet)"
+
+#: .\main\templates\admin_panel.html:4 .\main\templates\base.html:31
+#: .\main\templates\dashboard.html:14
+msgid "Адмін-панель"
+msgstr "Administrátorský panel"
+
+#: .\main\templates\admin_panel.html:5
+msgid "Лише для суперкористувачів."
+msgstr "Pouze pro superuživatele."
+
+#: .\main\templates\admin_panel.html:9
+msgid "Користувачі"
+msgstr "Uživatelé"
+
+#: .\main\templates\admin_panel.html:11
+#, python-format
+msgid "Всього: %(n)s"
+msgstr "Celkem: %(n)s"
+
+#: .\main\templates\admin_panel.html:14
+#, python-format
+msgid "Із правами staff (менеджери): %(n)s"
+msgstr "S právy staff (manažeři): %(n)s"
+
+#: .\main\templates\admin_panel.html:19 .\main\templates\admin_panel.html:33
+msgid "Співробітники"
+msgstr "Zaměstnanci"
+
+#: .\main\templates\admin_panel.html:21
+#, python-format
+msgid "Активних профілів: %(n)s"
+msgstr "Aktivních profilů: %(n)s"
+
+#: .\main\templates\admin_panel.html:26
+msgid "Активності"
+msgstr "Aktivity"
+
+#: .\main\templates\admin_panel.html:28
+#, python-format
+msgid "За тиждень: %(n)s"
+msgstr "Za týden: %(n)s"
+
+#: .\main\templates\admin_panel.html:37
+msgid "Юзер"
+msgstr "Uživatel"
+
+#: .\main\templates\admin_panel.html:38
+msgid "ПІБ"
+msgstr "Jméno a příjmení"
+
+#: .\main\templates\admin_panel.html:39 .\main\templates\clients\detail.html:30
+#: .\main\templates\deals\form.html:20
+msgid "Статус"
+msgstr "Stav"
+
+#: .\main\templates\admin_panel.html:60
+msgid "Поки немає співробітників"
+msgstr "Zatím žádní zaměstnanci"
+
+#: .\main\templates\admin_panel.html:65
+msgid "Топ активних (30 днів)"
+msgstr "Top aktivních (30 dní)"
+
+#: .\main\templates\admin_panel.html:69 .\main\templates\admin_panel.html:89
+msgid "Користувач"
+msgstr "Uživatel"
+
+#: .\main\templates\admin_panel.html:70
+msgid "Активностей"
+msgstr "Aktivit"
+
+#: .\main\templates\admin_panel.html:80 .\main\templates\admin_panel.html:102
+msgid "Немає даних"
+msgstr "Žádná data"
+
+#: .\main\templates\admin_panel.html:85
+msgid "Оцінки роботи (середній бал)"
+msgstr "Hodnocení práce (průměr)"
+
+#: .\main\templates\admin_panel.html:90
+msgid "Середній бал"
+msgstr "Průměr"
+
+#: .\main\templates\admin_panel.html:91
+msgid "К-сть оцінок"
+msgstr "Počet hodnocení"
+
+#: .\main\templates\base.html:7
+msgid "CRM"
+msgstr "CRM"
+
+#: .\main\templates\base.html:28 .\main\templates\clients\list.html:4
+#: .\main\templates\dashboard.html:80
+msgid "Клієнти"
+msgstr "Klienti"
+
+#: .\main\templates\base.html:29
+msgid "Dashboard"
+msgstr "Přehled"
+
+#: .\main\templates\base.html:34
+msgid "Вийти"
+msgstr "Odhlásit se"
+
+#: .\main\templates\clients\confirm_delete.html:5
+#, python-format
+msgid ""
+"\n"
+"    Видалити \"%(obj)s\"?\n"
+"  "
+msgstr ""
+"\n"
+"    Odstranit „%(obj)s“?\n"
+"  "
+
+#: .\main\templates\clients\confirm_delete.html:10
+#: .\main\templates\confirm_delete.html:10
+msgid "Так, видалити"
+msgstr "Ano, odstranit"
+
+#: .\main\templates\clients\detail.html:6
+msgid "Телефон:"
+msgstr "Telefon:"
+
+#: .\main\templates\clients\detail.html:7
+msgid "Email:"
+msgstr "E-mail:"
+
+#: .\main\templates\clients\detail.html:8
+msgid "Статус угоди:"
+msgstr "Stav dohody:"
+
+#: .\main\templates\clients\detail.html:9 .\main\templates\clients\list.html:61
+msgid "✅ Завершено"
+msgstr "✅ Dokončeno"
+
+#: .\main\templates\clients\detail.html:10
+#: .\main\templates\clients\list.html:62
+msgid "🔄 Триває"
+msgstr "🔄 Probíhá"
+
+#: .\main\templates\clients\detail.html:11
+#: .\main\templates\clients\list.html:63
+msgid "⏸️ Пауза"
+msgstr "⏸️ Pozastaveno"
+
+#: .\main\templates\clients\detail.html:12
+#: .\main\templates\clients\list.html:64
+msgid "❌ Немає"
+msgstr "❌ Není"
+
+#: .\main\templates\clients\detail.html:17
+msgid "← До списку"
+msgstr "← Zpět na seznam"
+
+#: .\main\templates\clients\detail.html:19
+msgid "+ Нова угода"
+msgstr "+ Nová dohoda"
+
+#: .\main\templates\clients\detail.html:20
+msgid "Редагувати клієнта"
+msgstr "Upravit klienta"
+
+#: .\main\templates\clients\detail.html:24
+msgid "Угоди"
+msgstr "Dohody"
+
+#: .\main\templates\clients\detail.html:28 .\main\templates\deals\form.html:14
+msgid "Назва"
+msgstr "Název"
+
+#: .\main\templates\clients\detail.html:29 .\main\templates\deals\form.html:17
+msgid "Сума"
+msgstr "Částka"
+
+#: .\main\templates\clients\detail.html:31
+#: .\main\templates\clients\list.html:48
+msgid "Створено"
+msgstr "Vytvořeno"
+
+#: .\main\templates\clients\detail.html:45
+#: .\main\templates\clients\detail.html:53
+#: .\main\templates\deals\detail.html:11
+msgid "🆕 Новий"
+msgstr "🆕 Nový"
+
+#: .\main\templates\clients\detail.html:46
+#: .\main\templates\clients\detail.html:52
+#: .\main\templates\deals\detail.html:10
+msgid "🔄 В роботі"
+msgstr "🔄 V práci"
+
+#: .\main\templates\clients\detail.html:47
+#: .\main\templates\clients\detail.html:51 .\main\templates\deals\detail.html:9
+msgid "✅ Закрито"
+msgstr "✅ Uzavřeno"
+
+#: .\main\templates\clients\detail.html:61
+#: .\main\templates\clients\list.html:71 .\main\templates\dashboard.html:169
+#: .\main\templates\deals\detail.html:45
+msgid "Видалити"
+msgstr "Odstranit"
+
+#: .\main\templates\clients\detail.html:66
+msgid "Угод поки немає"
+msgstr "Zatím žádné dohody"
+
+#: .\main\templates\clients\form.html:12 .\main\templates\clients\list.html:33
+msgid "Телефон"
+msgstr "Telefon"
+
+#: .\main\templates\clients\form.html:15 .\main\templates\clients\list.html:38
+msgid "Email"
+msgstr "E-mail"
+
+#: .\main\templates\clients\form.html:21
+msgid "Статус угоди"
+msgstr "Stav dohody"
+
+#: .\main\templates\clients\list.html:8
+msgid "Пошук"
+msgstr "Hledání"
+
+#: .\main\templates\clients\list.html:9
+msgid "Ім'я, телефон або email"
+msgstr "Jméno, telefon nebo e-mail"
+
+#: .\main\templates\clients\list.html:12
+msgid "Знайти"
+msgstr "Hledat"
+
+#: .\main\templates\clients\list.html:13 .\main\templates\dashboard.html:141
+msgid "Скинути"
+msgstr "Resetovat"
+
+#: .\main\templates\clients\list.html:17
+msgid "Новий клієнт"
+msgstr "Nový klient"
+
+#: .\main\templates\clients\list.html:43 .\main\templates\dashboard.html:112
+msgid "Угода"
+msgstr "Dohoda"
+
+#: .\main\templates\clients\list.html:76
+msgid "Немає клієнтів"
+msgstr "Žádní klienti"
+
+#: .\main\templates\clients\list.html:83
+msgid "Пагінація"
+msgstr "Stránkování"
+
+#: .\main\templates\clients\list.html:86
+msgid "Назад"
+msgstr "Zpět"
+
+#: .\main\templates\clients\list.html:89
+#, python-format
+msgid ""
+"\n"
+"        Сторінка %(page)s з %(total)s\n"
+"      "
+msgstr ""
+"\n"
+"        Stránka %(page)s z %(total)s\n"
+"      "
+
+#: .\main\templates\clients\list.html:94
+msgid "Далі"
+msgstr "Další"
+
+#: .\main\templates\confirm_delete.html:4
+msgid "Видалити активність?"
+msgstr "Odstranit aktivitu?"
+
+#: .\main\templates\dashboard.html:5
+#, python-format
+msgid "Вітаю, %(username)s 👋"
+msgstr "Vítejte, %(username)s 👋"
+
+#: .\main\templates\dashboard.html:6
+msgid "Це ваша панель керування."
+msgstr "Toto je vaše nástěnka."
+
+#: .\main\templates\dashboard.html:11
+msgid "Адмін-інструменти"
+msgstr "Admin nástroje"
+
+#: .\main\templates\dashboard.html:12
+msgid "Зведена статистика, налаштування, оцінки співробітників."
+msgstr "Souhrnné statistiky, nastavení, hodnocení zaměstnanců."
+
+#: .\main\templates\dashboard.html:17
+msgid "Загальна статистика (адмін)"
+msgstr "Souhrnná statistika (admin)"
+
+#: .\main\templates\dashboard.html:18
+msgid "За 7 днів"
+msgstr "Za 7 dní"
+
+#: .\main\templates\dashboard.html:19
+msgid "Всього активностей"
+msgstr "Celkem aktivit"
+
+#: .\main\templates\dashboard.html:23
+msgid "Панель менеджера"
+msgstr "Panel manažera"
+
+#: .\main\templates\dashboard.html:24
+msgid "Короткі метрики команди та швидкі дії."
+msgstr "Krátké metriky týmu a rychlé akce."
+
+#: .\main\templates\dashboard.html:25
+msgid "Відкрити розділ"
+msgstr "Otevřít sekci"
+
+#: .\main\templates\dashboard.html:32
+msgid "Клієнтів за 30 днів"
+msgstr "Klientů za 30 dní"
+
+#: .\main\templates\dashboard.html:36
+msgid "Угод (всього)"
+msgstr "Dohod (celkem)"
+
+#: .\main\templates\dashboard.html:40
+msgid "Продажі (закриті), ₴"
+msgstr "Prodeje (uzavřené), ₴"
+
+#: .\main\templates\dashboard.html:46
+msgid "Динаміка: нові клієнти та сума закритих угод"
+msgstr "Dynamika: noví klienti a součet uzavřených dohod"
+
+#: .\main\templates\dashboard.html:63
+msgid "Нові клієнти"
+msgstr "Noví klienti"
+
+#: .\main\templates\dashboard.html:68
+msgid "Сума закритих угод"
+msgstr "Součet uzavřených dohod"
+
+#: .\main\templates\dashboard.html:84
+msgid "Продажі"
+msgstr "Prodeje"
+
+#: .\main\templates\dashboard.html:95
+msgid "Мої задачі / угоди"
+msgstr "Moje úkoly / dohody"
+
+#: .\main\templates\dashboard.html:96
+msgid "Ваші останні активності та швидкі посилання."
+msgstr "Vaše poslední aktivity a rychlé odkazy."
+
+#: .\main\templates\dashboard.html:99
+msgid "+ Додати активність"
+msgstr "+ Přidat aktivitu"
+
+#: .\main\templates\dashboard.html:109
+msgid "Будь-який"
+msgstr "Libovolný"
+
+#: .\main\templates\dashboard.html:110
+msgid "Дзвінок"
+msgstr "Hovor"
+
+#: .\main\templates\dashboard.html:111
+msgid "Зустріч"
+msgstr "Schůzka"
+
+#: .\main\templates\dashboard.html:113
+msgid "Завдання"
+msgstr "Úkol"
+
+#: .\main\templates\dashboard.html:114
+msgid "Інше"
+msgstr "Jiné"
+
+#: .\main\templates\dashboard.html:119
+msgid "Від дати"
+msgstr "Od data"
+
+#: .\main\templates\dashboard.html:124
+msgid "До дати"
+msgstr "Do data"
+
+#: .\main\templates\dashboard.html:129
+msgid "Сортування"
+msgstr "Řazení"
+
+#: .\main\templates\dashboard.html:131
+msgid "Нові спочатку"
+msgstr "Nejnovější"
+
+#: .\main\templates\dashboard.html:132
+msgid "Старі спочатку"
+msgstr "Nejstarší"
+
+#: .\main\templates\dashboard.html:133
+msgid "Довші спочатку"
+msgstr "Delší nejdřív"
+
+#: .\main\templates\dashboard.html:134
+msgid "Коротші спочатку"
+msgstr "Kratší nejdřív"
+
+#: .\main\templates\dashboard.html:139
+msgid "Застосувати"
+msgstr "Použít"
+
+#: .\main\templates\dashboard.html:146
+msgid "Мої активності"
+msgstr "Moje aktivity"
+
+#: .\main\templates\dashboard.html:147
+msgid "Сьогодні"
+msgstr "Dnes"
+
+#: .\main\templates\dashboard.html:155
+msgid "Дата"
+msgstr "Datum"
+
+#: .\main\templates\dashboard.html:156
+msgid "Дії"
+msgstr "Akce"
+
+#: .\main\templates\dashboard.html:174
+msgid "Поки немає активностей"
+msgstr "Zatím žádné aktivity"
+
+#: .\main\templates\deals\detail.html:6
+msgid "Клієнт:"
+msgstr "Klient:"
+
+#: .\main\templates\deals\detail.html:7
+msgid "Сума:"
+msgstr "Částka:"
+
+#: .\main\templates\deals\detail.html:23
+msgid "Вкладення"
+msgstr "Přílohy"
+
+#: .\main\templates\deals\detail.html:29
+msgid "Файл"
+msgstr "Soubor"
+
+#: .\main\templates\deals\detail.html:30
+msgid "Завантажено"
+msgstr "Nahráno"
+
+#: .\main\templates\deals\detail.html:31
+msgid "Ким"
+msgstr "Kým"
+
+#: .\main\templates\deals\detail.html:54
+msgid "Файлів поки немає."
+msgstr "Zatím žádné soubory."
+
+#: .\main\templates\deals\detail.html:60
+msgid "Додати файл"
+msgstr "Přidat soubor"
+
+#: .\main\templates\deals\detail.html:62
+msgid "Завантажити"
+msgstr "Nahrát"
+
+#: .\main\templates\deals\detail.html:67
+msgid "← До клієнта"
+msgstr "← Zpět ke klientovi"
+
+#: .\main\templates\deals\form.html:11
+msgid "Клієнт"
+msgstr "Klient"
+
+#: .\main\templates\home.html:7
+msgid "Ласкаво просимо"
+msgstr "Vítejte"
+
+#: .\main\templates\home.html:15
+msgid "Ласкаво просимо до CRM"
+msgstr "Vítejte v CRM"
+
+#: .\main\templates\home.html:16
+msgid "Увійдіть або зареєструйтесь, щоб почати працювати"
+msgstr "Přihlaste se nebo se zaregistrujte, abyste mohli začít."
+
+#: .\templates\registration\password_reset_complete.html:4
+msgid "Пароль змінено"
+msgstr "Heslo změněno"
+
+#: .\templates\registration\password_reset_complete.html:5
+msgid "Тепер можете "
+msgstr "Nyní se můžete "
+
+#: .\templates\registration\password_reset_complete.html:5
+msgid "увійти"
+msgstr "přihlásit"
+
+#: .\templates\registration\password_reset_complete.html:5
+msgid " з новим паролем."
+msgstr " s novým heslem."
+
+#: .\templates\registration\password_reset_confirm.html:4
+msgid "Новий пароль"
+msgstr "Nové heslo"
+
+#: .\templates\registration\password_reset_confirm.html:8
+msgid "Зберегти новий пароль"
+msgstr "Uložit nové heslo"
+
+#: .\templates\registration\password_reset_done.html:4
+msgid "Готово"
+msgstr "Hotovo"
+
+#: .\templates\registration\password_reset_done.html:5
+msgid ""
+"Якщо такий email існує — ми надіслали інструкції. Перевір консоль сервера."
+msgstr "Pokud tento e-mail existuje, poslali jsme instrukce. Zkontrolujte konzoli serveru."
+
+#: .\templates\registration\password_reset_email.html:3
+msgid "Привіт, "
+msgstr "Ahoj, "
+
+#: .\templates\registration\password_reset_email.html:3
+msgid "! Перейдіть за посиланням, щоб встановити новий пароль:"
+msgstr "! Přejděte na odkaz pro nastavení nového hesla:"
+
+#: .\templates\registration\password_reset_email.html:5
+msgid "Якщо ви цього не просили — просто проігноруйте лист."
+msgstr "Pokud jste o to nežádali — tento e-mail ignorujte."
+
+#: .\templates\registration\password_reset_form.html:4
+msgid "Скидання паролю"
+msgstr "Obnovení hesla"
+
+#: .\templates\registration\password_reset_form.html:5
+msgid "Введіть email, на який надіслати посилання для відновлення."
+msgstr "Zadejte e-mail, na který poslat odkaz na obnovu."
+
+#: .\templates\registration\password_reset_form.html:9
+msgid "Надіслати посилання"
+msgstr "Odeslat odkaz"
