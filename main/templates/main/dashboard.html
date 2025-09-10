@@ -1,0 +1,188 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block content %}
+
+<style>
+  .dash { display:grid; grid-template-columns:240px 1fr; gap:1rem; }
+  @media (max-width:900px){
+    .dash { grid-template-columns:1fr; }
+    .dash-aside { order:2; }
+    .dash-main  { order:1; }
+  }
+  .dash-nav a{ display:block; padding:.5rem .75rem; border-radius:.5rem; text-decoration:none; }
+  .dash-nav a.active{ background:var(--primary); color:var(--primary-inverse); }
+  .hidden{ display:none !important; }
+  .muted{ color:var(--muted-color); font-size:.95em; }
+
+  /* Графік: контроль висоти контейнером */
+  .chart-box{ height:340px; max-height:60vh; }
+  .chart-box canvas{ display:block; width:100% !important; height:100% !important; }
+
+  /* Календар: мінімальна висота */
+  #fc{ min-height:540px; }
+</style>
+
+<h1>
+  {% blocktrans with username=user.username %}Вітаю, {{ username }} 👋{% endblocktrans %}
+</h1>
+<p class="muted">{% trans "Це ваша панель керування." %}</p>
+
+<div class="dash">
+  <!-- Ліва панель -->
+  <aside class="dash-aside">
+    <nav class="dash-nav" id="dashNav">
+      <strong class="muted" style="display:block;margin-bottom:.25rem">{% trans "Розділи" %}</strong>
+      <a href="#overview"   data-target="sec-overview"   class="active">{% trans "Огляд" %}</a>
+      <a href="#slots"      data-target="sec-slots">{% trans "Вільні слоти" %}</a>
+      <a href="#calendar"   data-target="sec-calendar">{% trans "Календар" %}</a>
+      <a href="#dynamics"   data-target="sec-dynamics">{% trans "Динаміка" %}</a>
+      <a href="#activities" data-target="sec-activities">{% trans "Мої активності" %}</a>
+    </nav>
+  </aside>
+
+  <!-- Контент -->
+  <section class="dash-main">
+    <div id="sec-overview">
+      {% include "main/dashboard/_overview.html" %}
+    </div>
+
+    <div id="sec-slots" class="hidden">
+      {% include "main/dashboard/_slots.html" %}
+    </div>
+
+    <div id="sec-calendar" class="hidden">
+      {% include "main/dashboard/_calendar.html" %}
+    </div>
+
+    <div id="sec-dynamics" class="hidden">
+      {% include "main/dashboard/_dynamics.html" %}
+    </div>
+
+    <div id="sec-activities" class="hidden">
+      {% include "main/dashboard/_activities.html" %}
+    </div>
+  </section>
+</div>
+
+<!-- Бібліотеки -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
+
+<script>
+/* ================== Перемикач вкладок ================== */
+document.addEventListener('DOMContentLoaded', function () {
+  const nav = document.getElementById('dashNav');
+  if (!nav) return;
+
+  const links = Array.prototype.slice.call(nav.querySelectorAll('a[data-target]'));
+  const sections = Array.prototype.slice.call(document.querySelectorAll('.dash-main > div[id^="sec-"]'));
+
+  function show(id) {
+    sections.forEach(function (s) { s.classList.toggle('hidden', s.id !== id); });
+    links.forEach(function (a) { a.classList.toggle('active', a.dataset.target === id); });
+
+    // ліниве ініт важких віджетів лише після показу секції
+    if (id === 'sec-dynamics') setTimeout(initChart, 0);
+    if (id === 'sec-calendar') setTimeout(initCalendar, 0);
+  }
+
+  function applyHash() {
+    const hash = (location.hash || '#overview').replace('#', '');
+    const id = 'sec-' + hash;
+    const exists = sections.some(function (s) { return s.id === id; });
+    show(exists ? id : 'sec-overview');
+  }
+
+  nav.addEventListener('click', function (e) {
+    const a = e.target.closest('a[data-target]');
+    if (!a) return;        // клік не по вкладці
+    e.preventDefault();
+    const id = a.dataset.target;             // 'sec-...'
+    const hash = id.replace('sec-', '');
+    if (location.hash !== '#' + hash) location.hash = hash;
+    else applyHash();                        // якщо той самий хеш — примусово оновити
+  });
+
+  window.addEventListener('hashchange', applyHash);
+  applyHash();
+});
+
+/* ================== Графік (Chart.js) ================== */
+let chartObj = null;
+function initChart(){
+  const canvas = document.getElementById('crmChart');
+  if (!canvas) return;
+
+  // якщо вже є — просто підлаштуємо розмір
+  if (chartObj) { chartObj.resize(); return; }
+
+  if (!window.Chart) { console.warn('Chart.js не підключено'); return; }
+
+  const labels      = {{ chart_labels_json  | default:"[]" | safe }};
+  const dataClients = {{ chart_clients_json | default:"[]" | safe }};
+  const dataSales   = {{ chart_sales_json   | default:"[]" | safe }};
+
+  chartObj = new Chart(canvas.getContext('2d'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label: "{% trans 'Нові клієнти' %}", data: dataClients, tension: 0.3 },
+        { label: "{% trans 'Сума закритих угод' %}", data: dataSales, yAxisID: 'y1', tension: 0.3 }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,  // висоту контролює .chart-box
+      interaction: { mode: 'index', intersect: false },
+      scales: {
+        y:  { beginAtZero: true, title: { display: true, text: '{% trans "Клієнти" %}' } },
+        y1: { beginAtZero: true, position: 'right',
+              title: { display: true, text: '{% trans "Продажі" %}' },
+              grid:  { drawOnChartArea: false } }
+      }
+    }
+  });
+}
+
+/* ================== Календар (FullCalendar) ================== */
+let calendarObj = null;
+function initCalendar(){
+  const el = document.getElementById('fc');
+  if (!el) return;
+
+  if (calendarObj) { calendarObj.updateSize(); calendarObj.render(); return; }
+  if (!window.FullCalendar) { console.warn('FullCalendar не підключено'); return; }
+
+  calendarObj = new FullCalendar.Calendar(el, {
+    initialView: 'timeGridWeek',
+    locale: '{{ LANGUAGE_CODE|default:"uk" }}',
+    firstDay: 1,
+    slotMinTime: '09:00:00',
+    slotMaxTime: '18:00:00',
+    nowIndicator: true,
+    height: 'auto',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'timeGridDay,timeGridWeek,dayGridMonth'
+    },
+    eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
+    events: {
+      url: '{% url "calendar_feed" %}',
+      failure: function(){ alert("{% trans 'Не вдалося завантажити події' %}"); }
+    },
+    eventClick: function(info){
+      if (info.event.url) { window.location.href = info.event.url; }
+      info.jsEvent.preventDefault();
+    }
+  });
+
+  // Відкласти перший render до моменту, коли секцію вже показано
+  requestAnimationFrame(function(){ calendarObj.render(); });
+}
+</script>
+
+{% endblock %}

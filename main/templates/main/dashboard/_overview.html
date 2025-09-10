@@ -1,0 +1,26 @@
+{% load i18n %}
+{% if user.is_superuser %}
+<article>
+  <header><strong>{% trans "Адмін-інструменти" %}</strong></header>
+  <p>{% trans "Зведена статистика, налаштування, оцінки співробітників." %}</p>
+  <p class="muted">
+    {% trans "За 7 днів" %}: <strong>{{ all_week_count|default:"0" }}</strong> ·
+    {% trans "Всього активностей" %}: <strong>{{ all_total|default:"0" }}</strong>
+  </p>
+  <footer><a href="{% url 'admin_panel' %}" role="button">{% trans "Адмін-панель" %}</a></footer>
+</article>
+{% endif %}
+
+<section class="grid" style="margin-block:1rem;">
+  <article><header><strong>{% trans "Клієнтів за 30 днів" %}</strong></header><h3 style="margin:0">{{ clients_last_month|default:"0" }}</h3></article>
+  <article><header><strong>{% trans "Угод (всього)" %}</strong></header><h3 style="margin:0">{{ deals_total|default:"0" }}</h3></article>
+  <article><header><strong>{% trans "Продажі (закриті), ₴" %}</strong></header><h3 style="margin:0">{{ sales_sum|default:"0" }}</h3></article>
+  <article><header><strong>{% trans "Записів на сьогодні" %}</strong></header><h3 style="margin:0">{{ bookings_today_count|default:"0" }}</h3></article>
+  <article>
+    <header><strong>{% trans "Виручка" %}</strong></header>
+    <p style="margin:0">
+      {% trans "Вчора" %}: <strong>{{ revenue_yesterday|default:"0" }}</strong><br>
+      {% trans "Цього місяця" %}: <strong>{{ revenue_month|default:"0" }}</strong>
+    </p>
+  </article>
+</section>

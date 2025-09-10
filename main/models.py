@@ -9,36 +9,44 @@ import os
 ALLOWED_EXTS = {".pdf", ".png", ".jpg", ".jpeg"}
 MAX_MB = 20
 
+
 def employee_upload_path(instance, filename):
     # media/employees/<user_id>/<filename>
     return os.path.join("employees", str(instance.user_id or "unassigned"), filename)
 
+
 class Employee(models.Model):
 
-    GENDER_CHOICES = [("m", "Чоловіча"), ("f", "Жіноча"), ("x", "Інше/Не вказано")]
+    GENDER_CHOICES = [("m", "Чоловіча"), ("f", "Жіноча"),
+                      ("x", "Інше/Не вказано")]
     MARITAL_CHOICES = [
         ("single", "Вільний/вільна"),
         ("married", "Одружений/заміжня"),
         ("divorced", "Розлучений/розлучена"),
         ("widowed", "Вдівець/вдова"),
     ]
-    
-    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
+
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, related_name="employee")
     position = models.CharField(max_length=100, blank=True)
     department = models.CharField(max_length=100, blank=True)
     hired_at = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     first_name = models.CharField(max_length=100, blank=True)
-    last_name  = models.CharField(max_length=100, blank=True)
-    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="x")
+    last_name = models.CharField(max_length=100, blank=True)
+    gender = models.CharField(
+        max_length=1, choices=GENDER_CHOICES, default="x")
     birth_date = models.DateField(null=True, blank=True)
     birth_place = models.CharField(max_length=150, blank=True)
     registration_address = models.CharField(max_length=255, blank=True)
 
-    marital_status = models.CharField(max_length=10, choices=MARITAL_CHOICES, default="single")
+    marital_status = models.CharField(
+        max_length=10, choices=MARITAL_CHOICES, default="single")
 
-    photo = models.ImageField(upload_to=employee_upload_path, null=True, blank=True)
-    contract_file = models.FileField(upload_to=employee_upload_path, null=True, blank=True)
+    photo = models.ImageField(
+        upload_to=employee_upload_path, null=True, blank=True)
+    contract_file = models.FileField(
+        upload_to=employee_upload_path, null=True, blank=True)
 
     hire_date = models.DateField(null=True, blank=True)
     termination_date = models.DateField(null=True, blank=True)
@@ -61,6 +69,7 @@ class Employee(models.Model):
         name = f"{self.first_name} {self.last_name}".strip()
         return name or self.user.get_username()
 
+
 class Activity(models.Model):
     TYPE_CHOICES = [
         ("call", "Дзвінок"),
@@ -69,7 +78,8 @@ class Activity(models.Model):
         ("task", "Завдання"),
         ("other", "Інше"),
     ]
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="activities")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="activities")
     kind = models.CharField(max_length=20, choices=TYPE_CHOICES)
     created_at = models.DateTimeField(auto_now_add=True)
     duration_min = models.PositiveIntegerField(default=0)
@@ -81,8 +91,10 @@ class Activity(models.Model):
     def __str__(self):
         return f"{self.user.username} · {self.get_kind_display()} · {self.created_at:%Y-%m-%d %H:%M}"
 
+
 class PerformanceReview(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="reviews")
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, related_name="reviews")
     period_start = models.DateField()
     period_end = models.DateField()
     score = models.PositiveSmallIntegerField()  # 1..10 або 0..100
@@ -91,6 +103,7 @@ class PerformanceReview(models.Model):
 
     class Meta:
         ordering = ["-period_end"]
+
 
 class Client(models.Model):
     DEAL_CHOICES = [
@@ -105,16 +118,18 @@ class Client(models.Model):
     email = models.EmailField(blank=True)
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="clients")
-    deal_status = models.CharField(max_length=10, choices=DEAL_CHOICES, default="none")
+    owner = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="clients")
+    deal_status = models.CharField(
+        max_length=10, choices=DEAL_CHOICES, default="none")
 
     class Meta:
         ordering = ["-created_at"]
+        indexes = [models.Index(fields=["name"]), models.Index(
+            fields=["phone"]), models.Index(fields=["email"])]
 
     def __str__(self):
         return self.name
-
-
 
 
 class Deal(models.Model):
@@ -123,21 +138,28 @@ class Deal(models.Model):
         ("in_progress", "В роботі"),
         ("closed", "Закрито"),
     ]
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name="deals")
+    client = models.ForeignKey(
+        Client, on_delete=models.CASCADE, related_name="deals")
     title = models.CharField(max_length=200)
     amount = models.DecimalField(max_digits=12, decimal_places=2, default=0)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="new")
-    owner = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="deals")
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default="new")
+    owner = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True, related_name="deals")
     notes = models.TextField(blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        # або краще локалізовано: _("Замовлення")
+        verbose_name = "Deal_Order"
+        verbose_name_plural = "Deal_Orders"   # або _("Замовлення")
         ordering = ["-created_at"]
 
     def __str__(self):
         return f"{self.title} · {self.client.name}"
-    
+
+
 def recalc_client_deal_status(client: Client):
     # якщо є хоча б одна активна угода → "active"
     if client.deals.filter(status__in=["new", "in_progress"]).exists():
@@ -152,18 +174,22 @@ def recalc_client_deal_status(client: Client):
         client.deal_status = new_status
         client.save(update_fields=["deal_status"])
 
+
 @receiver(post_save, sender=Deal)
 def on_deal_save(sender, instance, **kwargs):
     recalc_client_deal_status(instance.client)
+
 
 @receiver(post_delete, sender=Deal)
 def on_deal_delete(sender, instance, **kwargs):
     # після видалення теж перерахувати
     recalc_client_deal_status(instance.client)
 
+
 def deal_upload_path(instance, filename):
     # media/deals/<deal_id>/<original_name>
     return os.path.join("deals", str(instance.deal_id), filename)
+
 
 def validate_attachment(file):
     import os
@@ -172,20 +198,23 @@ def validate_attachment(file):
         raise ValidationError("Дозволені формати: PDF, PNG, JPG.")
     if file.size > MAX_MB * 1024 * 1024:
         raise ValidationError(f"Максимальний розмір файлу {MAX_MB}MB.")
-    
+
 
 class DealAttachment(models.Model):
-    deal = models.ForeignKey("Deal", on_delete=models.CASCADE, related_name="attachments")
-    file = models.FileField(upload_to=deal_upload_path, validators=[validate_attachment])
+    deal = models.ForeignKey(
+        "Deal", on_delete=models.CASCADE, related_name="attachments")
+    file = models.FileField(upload_to=deal_upload_path,
+                            validators=[validate_attachment])
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    uploaded_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    uploaded_by = models.ForeignKey(
+        User, on_delete=models.SET_NULL, null=True, blank=True)
 
     def filename(self):
         return os.path.basename(self.file.name)
 
     def __str__(self):
         return f"{self.deal} · {self.filename()}"
-    
+
 # class Client(models.Model):
 #     name = models.CharField(_("Name"), max_length=150)
 #     notes = models.TextField(_("Notes"), blank=True)

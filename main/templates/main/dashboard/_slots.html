@@ -1,0 +1,11 @@
+{% load i18n %}
+<article>
+  <header><strong>{% trans "Вільні слоти (сьогодні)" %}</strong></header>
+  <ul>
+    {% for master, slots in free_slots.items %}
+      <li><strong>{{ master }}</strong> — {% if slots %}{{ slots|join:", " }}{% else %}{% trans "Немає вільних вікон" %}{% endif %}</li>
+    {% empty %}
+      <li>{% trans "Немає активних майстрів" %}</li>
+    {% endfor %}
+  </ul>
+</article>

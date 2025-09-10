@@ -63,6 +63,78 @@
   </form>
 {% endif %}
 
+<hr>
+<h3>{% trans "Послуги в угоді" %}</h3>
+
+{% if lines %}
+<table>
+  <thead>
+    <tr>
+      <th>{% trans "Послуга" %}</th>
+      <th>{% trans "К-сть" %}</th>
+      <th>{% trans "Ціна за од." %}</th>
+      <th>{% trans "Сума" %}</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for line in lines %}
+    <tr>
+      <td>{{ line.service.name }}</td>
+      <td>{{ line.quantity }}</td>
+      <td>{{ line.unit_price }}</td>
+      <td>{{ line.subtotal }}</td>
+      <td style="white-space:nowrap">
+        <form method="post" action="{% url 'deal_line_delete' line.pk %}">
+          {% csrf_token %}
+          <button class="secondary" type="submit">{% trans "Видалити" %}</button>
+        </form>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<p>{% trans "Поки немає доданих послуг." %}</p>
+{% endif %}
+
+<form method="post" action="{% url 'deal_detail' deal.pk %}" style="margin-top:1rem;">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="line">
+  <fieldset>
+    <legend>{% trans "+ Додати послугу" %}</legend>
+    {{ line_form.as_p }}
+    <button type="submit">{% trans "Додати" %}</button>
+  </fieldset>
+</form>
+
+<hr>
+<h3>{% trans "Запис у календарі" %}</h3>
+{% if deal.booking %}
+  <p>
+    <strong>{% trans "Початок:" %}</strong> {{ deal.booking.start_at|date:"Y-m-d H:i" }}<br>
+    <strong>{% trans "Кінець:" %}</strong> {{ deal.booking.end_at|date:"Y-m-d H:i" }}<br>
+    <strong>{% trans "Майстер:" %}</strong> {{ deal.booking.master }}<br>
+    {% if deal.booking.resource %}
+      <strong>{% trans "Ресурс:" %}</strong> {{ deal.booking.resource }}<br>
+    {% endif %}
+    {% if deal.booking.note %}<em>{{ deal.booking.note }}</em>{% endif %}
+  </p>
+{% else %}
+  <p>{% trans "Поки немає бронювання." %}</p>
+{% endif %}
+
+<form method="post" action="{% url 'deal_detail' deal.pk %}">
+  {% csrf_token %}
+  <input type="hidden" name="form_type" value="booking">
+  <fieldset>
+    <legend>{% trans "Створити/оновити запис" %}</legend>
+    {{ booking_form.as_p }}
+    <button type="submit">{% trans "Зберегти" %}</button>
+  </fieldset>
+</form>
+
+
 <div style="margin-top:1rem">
   <a href="{% url 'client_detail' deal.client.pk %}" role="button" class="secondary">{% trans "← До клієнта" %}</a>
 </div>

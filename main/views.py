@@ -12,6 +12,9 @@ from datetime import datetime, timedelta
 from .forms import ActivityForm, ClientForm, DealForm, EmployeeForm
 from .models import Activity, Employee, PerformanceReview, Client, Deal, DealAttachment
 import json
+from beauty.models import DealLine, Booking
+from beauty.forms import DealLineForm, BookingForm
+from beauty.utils import free_slots_for_employee
 
 
 # ---- helpers ----
@@ -197,7 +200,39 @@ def dashboard(request):
     }
     ctx.update(ctx_reports)
 
-    return render(request, "dashboard.html", ctx)
+
+    tznow = timezone.localtime()
+    today = tznow.date()
+    yesterday = today - timedelta(days=1)
+    month_start = today.replace(day=1)
+
+    # 1) Записів сьогодні
+    bookings_today_count = Booking.objects.filter(start_at__date=today).count()
+
+    # 2) Вільні слоти (по кожному майстру)
+    free_slots = {}
+    for emp in Employee.objects.filter(is_active=True):
+        slots = free_slots_for_employee(timezone.now(), emp, start_hour=9, end_hour=18, slot_min=60)
+        # для компактності перетворимо в "HH:MM"
+        free_slots[emp.full_name if hasattr(emp, "full_name") else emp.user.username] = [
+            s.strftime("%H:%M") for s in slots
+        ]
+
+    # 3) Виручка за вчора/місяць (сума Deal.amount)
+    revenue_yesterday = Deal.objects.filter(updated_at__date=yesterday, status="closed").aggregate(
+        s=Sum("amount")
+    )["s"] or 0
+    revenue_month = Deal.objects.filter(updated_at__date__gte=month_start, status="closed").aggregate(
+        s=Sum("amount")
+    )["s"] or 0
+
+    ctx.update({
+    "bookings_today_count": bookings_today_count,
+    "free_slots": free_slots,
+    "revenue_yesterday": revenue_yesterday,
+    "revenue_month": revenue_month,
+    })
+    return render(request, "main/dashboard.html", ctx)
 
 
 # ---- create activity ----
@@ -411,15 +446,52 @@ def deal_detail(request, pk):
     deal = get_object_or_404(Deal, pk=pk)
     attachments = deal.attachments.order_by("-uploaded_at")
 
-    form = None
+    # форми за замовчуванням
+    line_form = DealLineForm()
+    booking_form = BookingForm(instance=getattr(deal, "booking", None))
+
+    # обробка POST з двох форм (визначаємо по hidden input)
+    if request.method == "POST":
+        form_type = request.POST.get("form_type")
+        if form_type == "line":
+            line_form = DealLineForm(request.POST)
+            if line_form.is_valid():
+                line = line_form.save(commit=False)
+                line.deal = deal
+                line.save()  # сам перерахує subtotal і total угоди
+                messages.success(request, "Послугу додано до угоди ✅")
+                return redirect("deal_detail", pk=deal.pk)
+            # якщо помилка — показуємо форму з помилками
+        elif form_type == "booking":
+            booking_form = BookingForm(request.POST, instance=getattr(deal, "booking", None))
+            if booking_form.is_valid():
+                b = booking_form.save(commit=False)
+                b.deal = deal
+                b.save()  # у save() рахується end_at із тривалостей послуг
+                messages.success(request, "Запис збережено ✅")
+                return redirect("deal_detail", pk=deal.pk)
+
+    # список рядків (для таблиці)
+    lines = deal.lines.select_related("service").all() if hasattr(deal, "lines") else []
+
+    # стара форма для вкладень (лишаємо як було)
+    att_form = None
     if request.user.is_staff or request.user.is_superuser:
-        form = DealAttachmentForm()
+        class DealAttachmentForm(forms.ModelForm):
+            class Meta:
+                model = DealAttachment
+                fields = ["file"]
+        att_form = DealAttachmentForm()
 
     return render(request, "deals/detail.html", {
         "deal": deal,
         "attachments": attachments,
-        "form": form,
+        "form": att_form,          # твоя форма вкладень
+        "lines": lines,            # НОВЕ
+        "line_form": line_form,    # НОВЕ
+        "booking_form": booking_form,  # НОВЕ
     })
+
 
 @require_http_methods(["POST"])
 @login_required

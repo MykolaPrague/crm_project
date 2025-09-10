@@ -1,0 +1,67 @@
+{% load i18n %}
+<article>
+  <header><strong>{% trans "Мої задачі / угоди" %}</strong></header>
+  <p class="muted">{% trans "Ваші останні активності та швидкі посилання." %}</p>
+  <p><a href="{% url 'activity_create' %}" role="button">{% trans "+ Додати активність" %}</a></p>
+</article>
+
+<form method="get" class="grid" style="align-items:end; gap:1rem;">
+  <div>
+    <label for="kind">{% trans "Тип" %}</label>
+    <select name="kind" id="kind">
+      <option value="" {% if not filter_kind %}selected{% endif %}>{% trans "Будь-який" %}</option>
+      <option value="call"  {% if filter_kind == "call" %}selected{% endif %}>{% trans "Дзвінок" %}</option>
+      <option value="meet"  {% if filter_kind == "meet" %}selected{% endif %}>{% trans "Зустріч" %}</option>
+      <option value="deal"  {% if filter_kind == "deal" %}selected{% endif %}>{% trans "Угода" %}</option>
+      <option value="task"  {% if filter_kind == "task" %}selected{% endif %}>{% trans "Завдання" %}</option>
+      <option value="other" {% if filter_kind == "other" %}selected{% endif %}>{% trans "Інше" %}</option>
+    </select>
+  </div>
+  <div><label for="from">{% trans "Від дати" %}</label><input type="date" id="from" name="from" value="{{ filter_from }}"></div>
+  <div><label for="to">{% trans "До дати" %}</label><input type="date" id="to" name="to" value="{{ filter_to }}"></div>
+  <div>
+    <label for="sort">{% trans "Сортування" %}</label>
+    <select name="sort" id="sort">
+      <option value="-created_at" {% if sort == "-created_at" %}selected{% endif %}>{% trans "Нові спочатку" %}</option>
+      <option value="created_at"  {% if sort == "created_at" %}selected{% endif %}>{% trans "Старі спочатку" %}</option>
+      <option value="-duration_min" {% if sort == "-duration_min" %}selected{% endif %}>{% trans "Довші спочатку" %}</option>
+      <option value="duration_min"  {% if sort == "duration_min" %}selected{% endif %}>{% trans "Коротші спочатку" %}</option>
+    </select>
+  </div>
+  <div class="grid">
+    <button type="submit">{% trans "Застосувати" %}</button>
+    <button type="button" onclick="window.location.href='{% url 'dashboard' %}'" class="secondary">{% trans "Скинути" %}</button>
+  </div>
+</form>
+
+<h3>{% trans "Мої активності" %}</h3>
+<p>{% trans "Сьогодні" %}: <strong>{{ my_today_count|default:"0" }}</strong></p>
+
+<table>
+  <thead>
+    <tr>
+      <th>{% trans "Тип" %}</th>
+      <th>{% trans "Тривалість (хв)" %}</th>
+      <th>{% trans "Нотатки" %}</th>
+      <th>{% trans "Дата" %}</th>
+      <th>{% trans "Дії" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in my_latest_activities %}
+    <tr>
+      <td>{{ a.get_kind_display }}</td>
+      <td>{{ a.duration_min }}</td>
+      <td>{{ a.notes|default:"—" }}</td>
+      <td>{{ a.created_at|date:"Y-m-d H:i" }}</td>
+      <td style="white-space:nowrap">
+        <a href="{% url 'activity_edit' a.pk %}">{% trans "Редагувати" %}</a>
+        &nbsp;|&nbsp;
+        <a href="{% url 'activity_delete' a.pk %}">{% trans "Видалити" %}</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">{% trans "Поки немає активностей" %}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
