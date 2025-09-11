@@ -1,26 +1,10 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% block body_class %}page-dashboard{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/dashboard.css' %}">{% endblock %}
+
 {% block content %}
-
-<style>
-  .dash { display:grid; grid-template-columns:240px 1fr; gap:1rem; }
-  @media (max-width:900px){
-    .dash { grid-template-columns:1fr; }
-    .dash-aside { order:2; }
-    .dash-main  { order:1; }
-  }
-  .dash-nav a{ display:block; padding:.5rem .75rem; border-radius:.5rem; text-decoration:none; }
-  .dash-nav a.active{ background:var(--primary); color:var(--primary-inverse); }
-  .hidden{ display:none !important; }
-  .muted{ color:var(--muted-color); font-size:.95em; }
-
-  /* Графік: контроль висоти контейнером */
-  .chart-box{ height:340px; max-height:60vh; }
-  .chart-box canvas{ display:block; width:100% !important; height:100% !important; }
-
-  /* Календар: мінімальна висота */
-  #fc{ min-height:540px; }
-</style>
 
 <h1>
   {% blocktrans with username=user.username %}Вітаю, {{ username }} 👋{% endblocktrans %}
@@ -33,8 +17,8 @@
     <nav class="dash-nav" id="dashNav">
       <strong class="muted" style="display:block;margin-bottom:.25rem">{% trans "Розділи" %}</strong>
       <a href="#overview"   data-target="sec-overview"   class="active">{% trans "Огляд" %}</a>
-      <a href="#slots"      data-target="sec-slots">{% trans "Вільні слоти" %}</a>
       <a href="#calendar"   data-target="sec-calendar">{% trans "Календар" %}</a>
+      <a href="#slots"      data-target="sec-slots">{% trans "Вільні слоти" %}</a>
       <a href="#dynamics"   data-target="sec-dynamics">{% trans "Динаміка" %}</a>
       <a href="#activities" data-target="sec-activities">{% trans "Мої активності" %}</a>
     </nav>

@@ -1,5 +1,7 @@
 from django import forms
 from .models import DealLine, Booking, Service
+from django.utils import timezone
+from datetime import timedelta
 from django.utils.translation import gettext_lazy as _
 
 class DealLineForm(forms.ModelForm):
@@ -27,9 +29,48 @@ class DealLineForm(forms.ModelForm):
 
 
 class BookingForm(forms.ModelForm):
+    """Основна форма для редагування запису у календарі."""
     class Meta:
         model = Booking
         fields = ["start_at", "master", "resource", "note"]
         widgets = {
             "start_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
         }
+
+class BookingQuickForm(forms.ModelForm):
+    """
+    Швидке бронювання під час створення угоди.
+    Додаємо поле тривалості, щоб прорахувати end_at
+    ще до збереження.
+    """
+    duration_min = forms.IntegerField(
+        min_value=5, max_value=600,
+        initial=30, required=True,
+        label=_("Тривалість (хв)")
+    )
+
+    class Meta:
+        model = Booking
+        fields = ["start_at", "master", "resource", "note", "duration_min"]
+        widgets = {
+            "start_at": forms.DateTimeInput(attrs={"type": "datetime-local"}),
+            "note": forms.Textarea(attrs={"rows": 2}),
+        }
+        labels = {
+            "start_at": _("Початок"),
+            "master": _("Майстер"),
+            "resource": _("Ресурс"),
+            "note": _("Нотатка"),
+            "duration_min": _("Тривалість (хв)"),
+        }
+
+    def clean(self):
+        cleaned = super().clean()
+        start_at = cleaned.get("start_at")
+        duration = cleaned.get("duration_min")
+        if start_at and duration:
+            if timezone.is_naive(start_at):
+                start_at = timezone.make_aware(start_at, timezone.get_current_timezone())
+                cleaned["start_at"] = start_at
+            cleaned["end_at"] = start_at + timedelta(minutes=duration)
+        return cleaned

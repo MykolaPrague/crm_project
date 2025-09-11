@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% block body_class %}page-deals{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/deals.css' %}">{% endblock %}
 {% block content %}
 <article class="auth-card" style="max-width:640px;margin:auto;">
   <header><h1 style="margin:0">{{ title }}</h1></header>
@@ -27,6 +30,24 @@
       <button type="submit">{% trans "Зберегти" %}</button>
       <a href="{% url 'client_list' %}" role="button" class="secondary">{% trans "Скасувати" %}</a>
     </div>
+  </form>
+
+  <form method="post">
+    {% csrf_token %}
+
+    <fieldset>
+      <legend>{% trans "Дані угоди" %}</legend>
+      {{ form.as_p }}
+    </fieldset>
+
+    <fieldset>
+      <legend>{% trans "Запис у календарі (необов’язково)" %}</legend>
+      <p class="muted">{% trans "Клік-кейс: зателефонував клієнт — одразу забронюйте дату/час і майстра." %}</p>
+      {{ booking_form.as_p }}
+    </fieldset>
+
+    <button type="submit">{% trans "Зберегти" %}</button>
+    <a href="javascript:history.back()" class="secondary">{% trans "Скасувати" %}</a>
   </form>
 </article>
 {% endblock %}

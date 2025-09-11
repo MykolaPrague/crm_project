@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% block body_class %}page-admin{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/admin.css' %}">{% endblock %}
 {% block content %}
 <h1>{% trans "Картка співробітника" %}</h1>
 

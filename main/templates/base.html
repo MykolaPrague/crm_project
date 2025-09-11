@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+{% load static %}
 {% load i18n %}
 <html lang="{% get_current_language as LANGUAGE_CODE %}{{ LANGUAGE_CODE }}">
   <head>
@@ -7,26 +8,22 @@
     <title>{% trans "CRM" %}</title>
     <link rel="stylesheet"
       href="https://unpkg.com/@picocss/pico@latest/css/pico.min.css" />
-    <style>
-      .auth-wrap { min-height: 100dvh; display: grid; place-items: center; padding: 2rem; }
-      .auth-card { max-width: 420px; width: 100%; }
-      .table-wrap { overflow-x: auto; }
-      table { white-space: nowrap; }
-      th a { text-decoration: none; color: inherit; cursor: pointer; }
-      th a:hover { text-decoration: underline; }
-      /* вирівняємо селектор мови справа в навігації */
-      nav ul { align-items: center; }
-      nav ul.right { margin-left: auto; }
-      /* повідомлення */
-      .flash { padding: .5rem .75rem; border-radius: .5rem; background: var(--muted-border-color); }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/base.css' %}">
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    <link rel="stylesheet" href="{% static 'css/utils.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/forms.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/tables.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/buttons.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/cards.css' %}">
+    <link rel="stylesheet" href="{% static 'css/components/tabs.css' %}">
+    {% block extra_css %}{% endblock %}
   </head>
-  <body>
+  <body class="{% block body_class %}{% endblock %}">
     {% if request.resolver_match.url_name != 'home' %}
       <nav class="container">
         <ul>
-          <li><a href="{% url 'client_list' %}">{% trans "Клієнти" %}</a></li>
           <li><a href="{% url 'dashboard' %}">{% trans "Dashboard" %}</a></li>
+          <li><a href="{% url 'client_list' %}">{% trans "Клієнти" %}</a></li>
           {% if request.user.is_superuser %}
             <li><a href="{% url 'admin_panel' %}">{% trans "Адмін-панель" %}</a></li>
           {% endif %}

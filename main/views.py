@@ -13,7 +13,7 @@ from .forms import ActivityForm, ClientForm, DealForm, EmployeeForm
 from .models import Activity, Employee, PerformanceReview, Client, Deal, DealAttachment
 import json
 from beauty.models import DealLine, Booking
-from beauty.forms import DealLineForm, BookingForm
+from beauty.forms import DealLineForm, BookingForm, BookingQuickForm
 from beauty.utils import free_slots_for_employee
 
 
@@ -384,30 +384,65 @@ only_staff = user_passes_test(lambda u: u.is_staff or u.is_superuser)
 @login_required
 @only_staff
 def deal_create(request, client_pk=None):
-    preset_client = None
-    if client_pk:
-        preset_client = get_object_or_404(Client, pk=client_pk)
+    preset_client = get_object_or_404(Client, pk=client_pk) if client_pk else None
 
     if request.method == "POST":
-        form = DealForm(request.POST)
-        if form.is_valid():
-            deal = form.save(commit=False)
+        # підставляємо клієнта, якщо поле disabled
+        data = request.POST.copy()
+        if preset_client:
+            data["client"] = str(preset_client.pk)
+
+        deal_form = DealForm(data)
+        booking_form = BookingQuickForm(request.POST)
+
+        if deal_form.is_valid():
+            deal = deal_form.save(commit=False)
             if preset_client:
                 deal.client = preset_client
             deal.owner = request.user
             deal.save()
+
+            # якщо заповнили поля бронювання — створимо Booking
+            if booking_form.is_valid():
+                start_at = booking_form.cleaned_data.get("start_at")
+                master   = booking_form.cleaned_data.get("master")
+                duration = booking_form.cleaned_data.get("duration_min")
+
+                if start_at and master and duration:
+                    booking = booking_form.save(commit=False)
+                    booking.end_at = booking_form.cleaned_data["end_at"]
+                    booking.deal = deal           # ← зв’язок з угодою
+                    booking.client = deal.client  # корисно для фільтрів
+                    booking.created_by = request.user if hasattr(booking, "created_by") else None
+                    booking.save()
+
             messages.success(request, "Угоду створено ✅")
             return redirect("client_detail", pk=deal.client.pk)
-    else:
-        initial = {}
-        if preset_client:
-            initial["client"] = preset_client
-        form = DealForm(initial=initial)
-        if preset_client:
-            # опційно заблокуємо вибір іншого клієнта у формі
-            form.fields["client"].disabled = True
+        else:
+            # форма угоди не валідна → покажемо помилки
+            pass
 
-    return render(request, "deals/form.html", {"form": form, "title": "Нова угода"})
+    else:
+        initial_deal = {}
+        if preset_client:
+            initial_deal["client"] = preset_client
+        deal_form = DealForm(initial=initial_deal)
+        if preset_client:
+            deal_form.fields["client"].disabled = True
+            deal_form.fields["client"].required = False
+
+        # стартове значення для зручності
+        tznow = timezone.localtime()
+        # округлити до найближчих 30 хв — опціонально
+        initial_booking = {"start_at": tznow.replace(minute=(0 if tznow.minute < 30 else 30), second=0, microsecond=0)}
+        booking_form = BookingQuickForm(initial=initial_booking)
+
+    return render(
+        request,
+        "deals/form.html",
+        {"form": deal_form, "booking_form": booking_form, "title": "Нова угода"}
+    )
+
 
 @require_http_methods(["GET", "POST"])
 @login_required

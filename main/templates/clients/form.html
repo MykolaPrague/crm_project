@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% block body_class %}page-clients{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/clients.css' %}">{% endblock %}
 {% block content %}
 <article class="auth-card" style="max-width:640px;margin:auto;">
   <header><h1 style="margin:0">{{ title }}</h1></header>

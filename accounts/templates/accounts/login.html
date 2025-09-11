@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load static %}
+{% block body_class %}page-login{% endblock %}
+{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/login.css' %}">{% endblock %}
 {% block content %}
 <div class="auth-wrap">
   <article class="auth-card">
