@@ -1,8 +1,12 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+
 {% block body_class %}page-dashboard{% endblock %}
-{% block extra_css %}<link rel="stylesheet" href="{% static 'css/pages/dashboard.css' %}">{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/pages/dashboard.css' %}">
+{% endblock %}
 
 {% block content %}
 
@@ -15,11 +19,11 @@
   <!-- Ліва панель -->
   <aside class="dash-aside">
     <nav class="dash-nav" id="dashNav">
-      <strong class="muted" style="display:block;margin-bottom:.25rem">{% trans "Розділи" %}</strong>
-      <a href="#overview"   data-target="sec-overview"   class="active">{% trans "Огляд" %}</a>
-      <a href="#calendar"   data-target="sec-calendar">{% trans "Календар" %}</a>
-      <a href="#slots"      data-target="sec-slots">{% trans "Вільні слоти" %}</a>
-      <a href="#dynamics"   data-target="sec-dynamics">{% trans "Динаміка" %}</a>
+      <strong class="muted" style="display:block;margin-bottom:.25rem;">{% trans "Розділи" %}</strong>
+      <a href="#overview"  data-target="sec-overview"  class="active">{% trans "Огляд" %}</a>
+      <a href="#calendar"  data-target="sec-calendar">{% trans "Календар" %}</a>
+      <a href="#slots"     data-target="sec-slots">{% trans "Вільні слоти" %}</a>
+      <a href="#dynamics"  data-target="sec-dynamics">{% trans "Динаміка" %}</a>
       <a href="#activities" data-target="sec-activities">{% trans "Мої активності" %}</a>
     </nav>
   </aside>
@@ -30,12 +34,12 @@
       {% include "main/dashboard/_overview.html" %}
     </div>
 
-    <div id="sec-slots" class="hidden">
-      {% include "main/dashboard/_slots.html" %}
-    </div>
-
     <div id="sec-calendar" class="hidden">
       {% include "main/dashboard/_calendar.html" %}
+    </div>
+
+    <div id="sec-slots" class="hidden">
+      {% include "main/dashboard/_slots.html" %}
     </div>
 
     <div id="sec-dynamics" class="hidden">
@@ -48,9 +52,100 @@
   </section>
 </div>
 
+<div id="bookingModal" class="modal-backdrop" role="dialog" aria-modal="true" aria-hidden="true">
+  <div class="modal-card">
+    <header>{% trans "Новий запис у календарі" %}</header>
+    <div class="body">
+      <form id="bookingForm">
+        <fieldset>
+          <legend style="margin-bottom:.5rem">{% trans "Режим створення" %}</legend>
+          <label>
+            <input type="radio" name="mode" value="new" checked>
+            {% trans "Створити нову угоду від клієнта + послуги" %}
+          </label>
+          <label>
+            <input type="radio" name="mode" value="deal">
+            {% trans "Прив’язати до існуючої угоди" %}
+          </label>
+        </fieldset>
+
+        <div id="modeNew">
+          <div class="row" style="margin-top:.5rem;">
+            <div>
+              <label>{% trans "Клієнт" %}</label>
+              <select id="bm_client" required>
+                <option value="">{% trans "Оберіть клієнта…" %}</option>
+                {% for c in clients %}
+                  <option value="{{ c.pk }}">{{ c.name }}{% if c.phone %} — {{ c.phone }}{% endif %}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div>
+              <label>{% trans "Послуга" %}</label>
+              <select id="bm_service" required>
+                <option value="">{% trans "Оберіть послугу…" %}</option>
+                {% for s in services %}
+                  <option value="{{ s.pk }}">{{ s.name }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <div id="modeDeal" class="hidden" style="margin-top:.5rem;">
+          <label>{% trans "ID існуючої угоди" %}</label>
+          <input id="bm_deal" type="number" min="1" placeholder="Напр. 123">
+          <p class="muted" style="margin:.25rem 0 0">{% trans "Для MVP достатньо ID; згодом зробимо пошук." %}</p>
+        </div>
+
+        <div class="row" style="margin-top:1rem;">
+          <div>
+            <label>{% trans "Майстер" %}</label>
+            <select id="bm_master" required>
+              <option value="">{% trans "Оберіть майстра…" %}</option>
+              {% for m in masters %}
+                <option value="{{ m.pk }}">{{ m.full_name|default:m.user.username }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label>{% trans "Ресурс (опційно)" %}</label>
+            <select id="bm_resource">
+              <option value="">{% trans "—" %}</option>
+              {% for r in resources %}
+                <option value="{{ r.pk }}">{{ r.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div class="row" style="margin-top:.75rem;">
+          <div>
+            <label>{% trans "Початок" %}</label>
+            <input id="bm_start" type="datetime-local" required>
+          </div>
+          <div>
+            <label>{% trans "Тривалість (хв)" %}</label>
+            <input id="bm_duration" type="number" min="5" max="600" value="30" required>
+          </div>
+        </div>
+
+        <div style="margin-top:.75rem;">
+          <label>{% trans "Нотатка" %}</label>
+          <textarea id="bm_note" rows="2" placeholder="{% trans 'Додаткова інформація' %}"></textarea>
+        </div>
+      </form>
+    </div>
+    <footer>
+      <button class="secondary" type="button" id="bm_cancel">{% trans "Скасувати" %}</button>
+      <button type="button" id="bm_save">{% trans "Зберегти" %}</button>
+    </footer>
+  </div>
+</div>
+
 <!-- Бібліотеки -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.css">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/main.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.5/locales-all.min.js"></script>
 
@@ -60,14 +155,12 @@ document.addEventListener('DOMContentLoaded', function () {
   const nav = document.getElementById('dashNav');
   if (!nav) return;
 
-  const links = Array.prototype.slice.call(nav.querySelectorAll('a[data-target]'));
+  const links    = Array.prototype.slice.call(nav.querySelectorAll('a[data-target]'));
   const sections = Array.prototype.slice.call(document.querySelectorAll('.dash-main > div[id^="sec-"]'));
 
   function show(id) {
-    sections.forEach(function (s) { s.classList.toggle('hidden', s.id !== id); });
-    links.forEach(function (a) { a.classList.toggle('active', a.dataset.target === id); });
-
-    // ліниве ініт важких віджетів лише після показу секції
+    sections.forEach(s => s.classList.toggle('hidden', s.id !== id));
+    links.forEach(a => a.classList.toggle('active', a.dataset.target === id));
     if (id === 'sec-dynamics') setTimeout(initChart, 0);
     if (id === 'sec-calendar') setTimeout(initCalendar, 0);
   }
@@ -75,18 +168,18 @@ document.addEventListener('DOMContentLoaded', function () {
   function applyHash() {
     const hash = (location.hash || '#overview').replace('#', '');
     const id = 'sec-' + hash;
-    const exists = sections.some(function (s) { return s.id === id; });
+    const exists = sections.some(s => s.id === id);
     show(exists ? id : 'sec-overview');
   }
 
   nav.addEventListener('click', function (e) {
     const a = e.target.closest('a[data-target]');
-    if (!a) return;        // клік не по вкладці
+    if (!a) return;
     e.preventDefault();
-    const id = a.dataset.target;             // 'sec-...'
+    const id = a.dataset.target;
     const hash = id.replace('sec-', '');
     if (location.hash !== '#' + hash) location.hash = hash;
-    else applyHash();                        // якщо той самий хеш — примусово оновити
+    else applyHash();
   });
 
   window.addEventListener('hashchange', applyHash);
@@ -98,8 +191,6 @@ let chartObj = null;
 function initChart(){
   const canvas = document.getElementById('crmChart');
   if (!canvas) return;
-
-  // якщо вже є — просто підлаштуємо розмір
   if (chartObj) { chartObj.resize(); return; }
 
   if (!window.Chart) { console.warn('Chart.js не підключено'); return; }
@@ -113,19 +204,17 @@ function initChart(){
     data: {
       labels,
       datasets: [
-        { label: "{% trans 'Нові клієнти' %}", data: dataClients, tension: 0.3 },
-        { label: "{% trans 'Сума закритих угод' %}", data: dataSales, yAxisID: 'y1', tension: 0.3 }
+        { label: "{% trans 'Нові клієнти' %}", data: dataClients, tension: .3 },
+        { label: "{% trans 'Сума закритих угод' %}", data: dataSales, yAxisID: 'y1', tension: .3 }
       ]
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false,  // висоту контролює .chart-box
+      maintainAspectRatio: false,
       interaction: { mode: 'index', intersect: false },
       scales: {
         y:  { beginAtZero: true, title: { display: true, text: '{% trans "Клієнти" %}' } },
-        y1: { beginAtZero: true, position: 'right',
-              title: { display: true, text: '{% trans "Продажі" %}' },
-              grid:  { drawOnChartArea: false } }
+        y1: { beginAtZero: true, position: 'right', title: { display: true, text: '{% trans "Продажі" %}' }, grid: { drawOnChartArea: false } }
       }
     }
   });
@@ -133,12 +222,12 @@ function initChart(){
 
 /* ================== Календар (FullCalendar) ================== */
 let calendarObj = null;
+
 function initCalendar(){
   const el = document.getElementById('fc');
   if (!el) return;
 
   if (calendarObj) { calendarObj.updateSize(); calendarObj.render(); return; }
-  if (!window.FullCalendar) { console.warn('FullCalendar не підключено'); return; }
 
   calendarObj = new FullCalendar.Calendar(el, {
     initialView: 'timeGridWeek',
@@ -148,25 +237,182 @@ function initCalendar(){
     slotMaxTime: '18:00:00',
     nowIndicator: true,
     height: 'auto',
-    headerToolbar: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'timeGridDay,timeGridWeek,dayGridMonth'
-    },
+    headerToolbar: { left: 'prev,next today', center: 'title', right: 'timeGridDay,timeGridWeek,dayGridMonth' },
     eventTimeFormat: { hour: '2-digit', minute: '2-digit', hour12: false },
-    events: {
-      url: '{% url "calendar_feed" %}',
-      failure: function(){ alert("{% trans 'Не вдалося завантажити події' %}"); }
+    events: { url: '/api/calendar/events/' },
+
+    /* інтерактивність */
+    selectable: true,
+    selectMirror: true,
+    editable: true,
+    eventResizableFromStart: true,
+
+    /* при виділенні інтервалу відкриваємо модалку */
+    select: function(info){ openBookingModal(info); },
+
+    eventDrop: async function(info){
+      const payload = { start_at: info.event.start.toISOString(), end_at: info.event.end.toISOString() };
+      try{
+        const resp = await fetch(`/api/calendar/bookings/${info.event.id}/`, {
+          method: 'PATCH',
+          headers: {'Content-Type':'application/json', 'X-CSRFToken': getCsrf()},
+          body: JSON.stringify(payload)
+        });
+        if(!resp.ok){
+          info.revert();
+          const err = await resp.json().catch(()=>({}));
+          alert(err.message || 'Неможливо перемістити (конфлікт?)');
+        }
+      }catch(e){
+        info.revert();
+        alert('Мережна помилка');
+      }
     },
+
+    eventResize: async function(info){
+      const payload = { start_at: info.event.start.toISOString(), end_at: info.event.end.toISOString() };
+      try{
+        const resp = await fetch(`/api/calendar/bookings/${info.event.id}/`, {
+          method: 'PATCH',
+          headers: {'Content-Type':'application/json', 'X-CSRFToken': getCsrf()},
+          body: JSON.stringify(payload)
+        });
+        if(!resp.ok){
+          info.revert();
+          const err = await resp.json().catch(()=>({}));
+          alert(err.message || 'Неможливо змінити тривалість');
+        }
+      }catch(e){
+        info.revert();
+        alert('Мережна помилка');
+      }
+    },
+
     eventClick: function(info){
       if (info.event.url) { window.location.href = info.event.url; }
       info.jsEvent.preventDefault();
     }
   });
 
-  // Відкласти перший render до моменту, коли секцію вже показано
-  requestAnimationFrame(function(){ calendarObj.render(); });
+  requestAnimationFrame(() => calendarObj.render());
 }
+
+/* ================== Модалка: логіка ================== */
+function getCsrf(){
+  const m = document.cookie.match(/(?:^|;)\s*csrftoken=([^;]+)/);
+  return m ? decodeURIComponent(m[1]) : '';
+}
+function toLocalInputValue(dateObj){
+  const pad = n => String(n).padStart(2,'0');
+  return dateObj.getFullYear() + '-' + pad(dateObj.getMonth()+1) + '-' + pad(dateObj.getDate())
+       + 'T' + pad(dateObj.getHours()) + ':' + pad(dateObj.getMinutes());
+}
+function parseLocalInputValue(value){ return new Date(value); }
+
+const $modal     = document.getElementById('bookingModal');
+const $form      = document.getElementById('bookingForm');
+const $bmModeNew = document.getElementById('modeNew');
+const $bmModeDeal= document.getElementById('modeDeal');
+const $bmClient  = document.getElementById('bm_client');
+const $bmService = document.getElementById('bm_service');
+const $bmDeal    = document.getElementById('bm_deal');
+const $bmMaster  = document.getElementById('bm_master');
+const $bmResource= document.getElementById('bm_resource');
+const $bmStart   = document.getElementById('bm_start');
+const $bmDuration= document.getElementById('bm_duration');
+const $bmNote    = document.getElementById('bm_note');
+const $bmCancel  = document.getElementById('bm_cancel');
+const $bmSave    = document.getElementById('bm_save');
+
+let selectionDefaults = null;
+
+function openBookingModal(selectionInfo){
+  const start = selectionInfo?.start ? new Date(selectionInfo.start) : new Date();
+  const end   = selectionInfo?.end   ? new Date(selectionInfo.end)   : new Date(start.getTime() + 30*60000);
+  const durationMin = Math.max(5, Math.round((end - start) / 60000));
+
+  selectionDefaults = { start, end, durationMin };
+  $bmStart.value    = toLocalInputValue(start);
+  $bmDuration.value = durationMin;
+
+  $form.mode.value = 'new';
+  $bmModeNew.classList.remove('hidden');
+  $bmModeDeal.classList.add('hidden');
+
+  $modal.classList.add('show');
+  $modal.setAttribute('aria-hidden', 'false');
+}
+
+function closeBookingModal(){
+  $modal.classList.remove('show');
+  $modal.setAttribute('aria-hidden', 'true');
+  selectionDefaults = null;
+}
+
+$form.addEventListener('change', function(e){
+  if (e.target.name === 'mode'){
+    const mode = e.target.value;
+    if (mode === 'new'){
+      $bmModeNew.classList.remove('hidden');
+      $bmModeDeal.classList.add('hidden');
+    } else {
+      $bmModeNew.classList.add('hidden');
+      $bmModeDeal.classList.remove('hidden');
+    }
+  }
+});
+$bmCancel.addEventListener('click', closeBookingModal);
+
+$bmSave.addEventListener('click', async function(){
+  const mode = $form.mode.value;
+  const startAt = parseLocalInputValue($bmStart.value);
+  const payload = {
+    start_at: startAt.toISOString(),
+    duration_min: parseInt($bmDuration.value || '30', 10),
+    master_id: parseInt($bmMaster.value || '0', 10),
+    resource_id: $bmResource.value ? parseInt($bmResource.value, 10) : null,
+    note: $bmNote.value || ''
+  };
+
+  if (!payload.master_id || !payload.start_at) {
+    alert("{% trans 'Заповніть обовʼязкові поля' %}");
+    return;
+  }
+
+  if (mode === 'new'){
+    payload.client_id = parseInt($bmClient.value || '0', 10);
+    payload.service_id = parseInt($bmService.value || '0', 10);
+    if (!payload.client_id || !payload.service_id){
+      alert("{% trans 'Оберіть клієнта та послугу' %}");
+      return;
+    }
+  } else {
+    payload.deal_id = parseInt($bmDeal.value || '0', 10);
+    if (!payload.deal_id){
+      alert("{% trans 'Вкажіть ID угоди' %}");
+      return;
+    }
+  }
+
+  try{
+    const resp = await fetch('/api/calendar/bookings/', {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json', 'X-CSRFToken': getCsrf() },
+      body: JSON.stringify(payload)
+    });
+    if (resp.ok){
+      const event = await resp.json();
+      calendarObj.addEvent(event);
+      closeBookingModal();
+    } else {
+      let msg = '{% trans "Помилка створення" %}';
+      try { const data = await resp.json(); if (data.message) msg = data.message; } catch(e){}
+      alert(msg);
+    }
+  } catch (e){
+    alert('{% trans "Мережна помилка" %}');
+  }
+});
 </script>
 
 {% endblock %}

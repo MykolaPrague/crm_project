@@ -12,7 +12,7 @@ from datetime import datetime, timedelta
 from .forms import ActivityForm, ClientForm, DealForm, EmployeeForm
 from .models import Activity, Employee, PerformanceReview, Client, Deal, DealAttachment
 import json
-from beauty.models import DealLine, Booking
+from beauty.models import DealLine, Booking, Service, Resource
 from beauty.forms import DealLineForm, BookingForm, BookingQuickForm
 from beauty.utils import free_slots_for_employee
 
@@ -232,6 +232,13 @@ def dashboard(request):
     "revenue_yesterday": revenue_yesterday,
     "revenue_month": revenue_month,
     })
+
+    ctx.update({
+    "masters": Employee.objects.filter(is_active=True).select_related("user"),
+    "services": Service.objects.all().order_by("name"),
+    "clients": Client.objects.order_by("-created_at")[:200],  # топ-200 останніх (щоб не довго)
+    "resources": Resource.objects.all().order_by("name"),
+})
     return render(request, "main/dashboard.html", ctx)
 
 
