@@ -6,6 +6,7 @@ class EmployeeAdmin(admin.ModelAdmin):
     list_display = ("user", "position", "department", "is_active", "hired_at")
     search_fields = ("user__username", "user__email", "position", "department")
     list_filter = ("department", "is_active")
+    filter_horizontal = ("services",)
 
 @admin.register(Activity)
 class ActivityAdmin(admin.ModelAdmin):

@@ -1,11 +1,8 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from django.contrib.auth.models import User
 from decimal import Decimal
 from datetime import timedelta
-
-# Імпорти твоїх моделей з поточного апу (замінити на реальну назву апу)
-from main.models import Deal, Employee  # <- заміни your_app на свій app label
+from main.models import Deal, Employee
 
 class Service(models.Model):
     """Послуга салону (каталог)."""
@@ -42,7 +39,7 @@ class DealLine(models.Model):
         return f"{self.deal} · {self.service} × {self.quantity}"
 
     def save(self, *args, **kwargs):
-        if not self.unit_price:
+        if self.unit_price is None:
             self.unit_price = self.service.base_price
         self.subtotal = (self.unit_price * self.quantity).quantize(Decimal("0.01"))
         super().save(*args, **kwargs)
@@ -88,12 +85,13 @@ class Booking(models.Model):
     deal = models.OneToOneField(Deal, on_delete=models.CASCADE, related_name="booking", verbose_name=_("Угода"))
     start_at = models.DateTimeField(db_index=True, verbose_name=_("Початок"))
     end_at = models.DateTimeField(db_index=True, verbose_name=_("Кінець"), null=True, blank=True)
-    master = models.ForeignKey(Employee, on_delete=models.PROTECT, related_name="bookings", verbose_name=_("Майстер"))
+    master = models.ForeignKey(Employee, null=True, blank=True, on_delete=models.PROTECT,related_name="bookings", verbose_name=_("Майстер"))
+    status = models.CharField(max_length=16,choices=[("tentative","Попередній"),("confirmed","Підтверджено"),("cancelled","Скасовано")],default="confirmed", verbose_name=_("Статус бронювання"))
     resource = models.ForeignKey(Resource, null=True, blank=True, on_delete=models.SET_NULL, verbose_name=_("Ресурс"))
     color = models.CharField(max_length=7, default="#88CCEE", verbose_name=_("Колір"))
-
     note = models.CharField(max_length=200, blank=True, verbose_name=_("Нотатка"))
     created_at = models.DateTimeField(auto_now_add=True)
+    allow_unskilled = models.BooleanField(default=False, verbose_name=_("Призначено без навички"))
 
     class Meta:
         verbose_name = _("Запис")
@@ -108,8 +106,10 @@ class Booking(models.Model):
         if not self.end_at:
             total_min = 0
             for line in self.deal.lines.select_related("service"):
-                total_min += int(line.service.duration_min * float(line.quantity))
+                total_min += int(Decimal(line.service.duration_min) * line.quantity)
             if total_min <= 0:
                 total_min = 30
             self.end_at = self.start_at + timedelta(minutes=total_min)
         super().save(*args, **kwargs)
+
+

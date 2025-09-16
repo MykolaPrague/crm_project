@@ -26,37 +26,27 @@ class Employee(models.Model):
         ("widowed", "Вдівець/вдова"),
     ]
 
-    user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="employee")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name="employee")
     position = models.CharField(max_length=100, blank=True)
     department = models.CharField(max_length=100, blank=True)
     hired_at = models.DateField(null=True, blank=True)
     is_active = models.BooleanField(default=True)
     first_name = models.CharField(max_length=100, blank=True)
     last_name = models.CharField(max_length=100, blank=True)
-    gender = models.CharField(
-        max_length=1, choices=GENDER_CHOICES, default="x")
+    gender = models.CharField(max_length=1, choices=GENDER_CHOICES, default="x")
     birth_date = models.DateField(null=True, blank=True)
     birth_place = models.CharField(max_length=150, blank=True)
     registration_address = models.CharField(max_length=255, blank=True)
-
-    marital_status = models.CharField(
-        max_length=10, choices=MARITAL_CHOICES, default="single")
-
-    photo = models.ImageField(
-        upload_to=employee_upload_path, null=True, blank=True)
-    contract_file = models.FileField(
-        upload_to=employee_upload_path, null=True, blank=True)
-
+    marital_status = models.CharField(max_length=10, choices=MARITAL_CHOICES, default="single")
+    photo = models.ImageField(upload_to=employee_upload_path, null=True, blank=True)
+    contract_file = models.FileField(upload_to=employee_upload_path, null=True, blank=True)
     hire_date = models.DateField(null=True, blank=True)
     termination_date = models.DateField(null=True, blank=True)
-
     is_active = models.BooleanField(default=True)
-
     # простий лічильник прогулів; для деталізації — зробимо окрему модель Absence
     absences_count = models.PositiveIntegerField(default=0)
-
     created_at = models.DateTimeField(auto_now_add=True)
+    services = models.ManyToManyField('beauty.Service', blank=True, related_name='employees', verbose_name=_("Навички (послуги)"))
 
     class Meta:
         ordering = ["last_name", "first_name"]

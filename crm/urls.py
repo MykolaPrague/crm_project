@@ -30,7 +30,7 @@ urlpatterns = [
     path("attachments/<int:att_id>/delete/", main_views.deal_attachment_delete, name="deal_attachment_delete"),
     path("deals/<int:pk>/status/", main_views.deal_change_status, name="deal_change_status"),
     path("i18n/", include("django.conf.urls.i18n")),
-    path("", include("beauty.urls")),
+    path("api/", include("beauty.urls")),
 
 ]
 

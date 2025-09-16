@@ -1,7 +1,6 @@
 # beauty/api.py
 from django.http import JsonResponse, HttpResponseNotAllowed, HttpResponseBadRequest
 from django.views.decorators.http import require_GET, require_POST
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
@@ -10,11 +9,12 @@ from django.db import transaction
 from datetime import timedelta
 import json
 
-from main.models import Deal, Employee
-from .models import Booking, Resource
-from beauty.models import Booking, Resource, Service, DealLine  
+from main.models import Deal, Employee, Client
+from beauty.models import Booking, Resource, Service, DealLine  # усе з beauty.models
 
-def staff_only(user): 
+# ---- helpers ----
+
+def staff_only(user):
     return user.is_staff or user.is_superuser
 
 def parse_json(request):
@@ -24,7 +24,10 @@ def parse_json(request):
         return None
 
 def to_aware(dt_str):
-    dt = parse_datetime(dt_str)  # парсить і з часовою зоною, і без
+    """
+    Приймає ISO-строку. Повертає aware-datetime в поточній TZ.
+    """
+    dt = parse_datetime(dt_str)  # парсить як з TZ, так і без
     if not dt:
         return None
     if timezone.is_naive(dt):
@@ -32,14 +35,27 @@ def to_aware(dt_str):
     return dt
 
 def iso(dt):
-    if not dt:
-        return None
-    return timezone.localtime(dt).isoformat()
+    return timezone.localtime(dt).isoformat() if dt else None
 
 def booking_to_event(b: Booking):
-    title = f"{b.deal.client.name if b.deal and b.deal.client else 'Клієнт'}"
-    if hasattr(b.deal, "title") and b.deal.title:
-        title = f"{b.deal.title} — {title}"
+    """
+    Перетворює Booking → FullCalendar event dict.
+    """
+    client_name = b.deal.client.name if (b.deal_id and b.deal.client_id) else ""
+    deal_title = getattr(b.deal, "title", "") if b.deal_id else ""
+    title = deal_title or client_name or "Запис"
+
+    # витягнемо першу послугу з угоди (якщо є)
+    first_line = None
+    try:
+        first_line = b.deal.lines.select_related("service").first()
+    except Exception:
+        pass
+
+    master_name = None
+    if b.master_id:
+        master_name = getattr(b.master, "full_name", None) or b.master.user.get_username()
+
     return {
         "id": b.pk,
         "title": title,
@@ -49,30 +65,44 @@ def booking_to_event(b: Booking):
         "borderColor": b.color or "#88CCEE",
         "url": f"/deals/{b.deal.pk}/" if b.deal_id else None,
         "extendedProps": {
-            "client": b.deal.client.name if b.deal and b.deal.client else "",
-            "master": b.master.full_name if hasattr(b.master, "full_name") else b.master.user.get_username(),
+            "client": client_name,
+            "master": master_name,
             "resource": b.resource.name if b.resource_id else "",
-        }
+            "status": b.status,
+            "allow_unskilled": b.allow_unskilled,
+            "service": first_line.service.name if first_line else "",
+        },
     }
+
+# ---- endpoints ----
 
 @login_required
 @require_GET
 def calendar_events(request):
     """
-    FullCalendar викликає GET /api/calendar/events?start=...&end=...&master=optional
-    start/end — ISO строки. Ми віддаємо події у вікні.
+    GET /api/calendar/events?start=...&end=...&master=optional
+    FullCalendar дає ISO-інтервал для завантаження подій.
     """
-    start = request.GET.get("start")
-    end   = request.GET.get("end")
-    master = request.GET.get("master")  # optional filter
+    start_str = request.GET.get("start")
+    end_str   = request.GET.get("end")
+    master_id = request.GET.get("master")  # optional
 
-    if not start or not end:
+    if not start_str or not end_str:
         return HttpResponseBadRequest("start/end required")
 
-    qs = Booking.objects.select_related("deal__client", "master__user", "resource") \
-                        .filter(start_at__lt=end, end_at__gt=start)
-    if master:
-        qs = qs.filter(master_id=master)
+    # FullCalendar вже дає ISO з TZ → можна фільтрувати напряму по строках,
+    # але безпечніше привести до aware-datetime.
+    start_dt = to_aware(start_str)
+    end_dt   = to_aware(end_str)
+    if not start_dt or not end_dt:
+        return HttpResponseBadRequest("Invalid start/end")
+
+    qs = (Booking.objects
+          .select_related("deal__client", "master__user", "resource")
+          .filter(start_at__lt=end_dt, end_at__gt=start_dt))
+
+    if master_id:
+        qs = qs.filter(master_id=master_id)
 
     events = [booking_to_event(b) for b in qs]
     return JsonResponse(events, safe=False)
@@ -83,9 +113,16 @@ def calendar_events(request):
 @require_POST
 def booking_create(request):
     """
-    Підтримує два режими:
-    1) deal_id + master_id [+ duration_min] → створюємо Booking для існуючої угоди
-    2) client_id + service_id + master_id [+ duration_min] → створюємо Deal (+ DealLine) і Booking
+    POST /api/calendar/bookings/
+    Режими:
+      1) deal_id + [master_id] [+ duration_min] → Booking для існуючої угоди
+      2) client_id + service_id + [master_id] [+ duration_min] → створюємо Deal(+DealLine) і Booking
+
+    Також приймає:
+      - start_at (ISO, required)
+      - resource_id (optional)
+      - note (optional)
+      - allow_unskilled (bool, optional)
     """
     data = parse_json(request)
     if not data:
@@ -96,14 +133,28 @@ def booking_create(request):
         return HttpResponseBadRequest("start_at required")
 
     duration_min = int(data.get("duration_min") or 0)
+    allow_unskilled = bool(data.get("allow_unskilled"))
 
-    # ---- режим 1: існуюча угода ----
+    # master може бути None (запис без майстра)
+    master = None
+    if "master_id" in data and data.get("master_id") not in (None, "", "null"):
+        master = get_object_or_404(Employee, pk=data["master_id"])
+
+    resource = None
+    if data.get("resource_id"):
+        resource = get_object_or_404(Resource, pk=data["resource_id"])
+
+    # ---- визначаємо угоду ----
     deal = None
+    service = None
+
     if data.get("deal_id"):
         deal = get_object_or_404(Deal, pk=data["deal_id"])
-
-    # ---- режим 2: створення угоди з клієнта/послуги ----
-    if not deal:
+        # спробуємо отримати послугу з першого рядка (для перевірки навички)
+        service_line = deal.lines.select_related("service").first()
+        service = service_line.service if service_line else None
+    else:
+        # режим client+service → створюємо Deal + DealLine
         client_id = data.get("client_id")
         service_id = data.get("service_id")
         if not (client_id and service_id):
@@ -112,56 +163,57 @@ def booking_create(request):
         client = get_object_or_404(Client, pk=client_id)
         service = get_object_or_404(Service, pk=service_id)
 
-        # якщо duration не передали — беремо з послуги
         if duration_min <= 0:
             duration_min = int(getattr(service, "duration_min", 30) or 30)
 
-        # створюємо Deal + DealLine
         with transaction.atomic():
             deal = Deal.objects.create(
                 client=client,
                 title=getattr(service, "name", "Послуга"),
-                amount=getattr(service, "price", 0) or 0,
+                amount=getattr(service, "base_price", 0) or 0,
                 status="in_progress",
                 owner=request.user,
                 notes=data.get("note", "")
             )
-            # якщо у тебе інше ім'я моделі/полів — підправ нижче
             DealLine.objects.create(
                 deal=deal,
                 service=service,
                 quantity=1,
-                unit_price=getattr(service, "price", 0) or 0,
+                unit_price=getattr(service, "base_price", 0) or 0,
             )
 
-    master = get_object_or_404(Employee, pk=data["master_id"])
-    resource = None
-    if data.get("resource_id"):
-        resource = get_object_or_404(Resource, pk=data["resource_id"])
+    # ---- валідація навички майстра (якщо заданий і є service) ----
+    if master and service and not allow_unskilled:
+        if not master.services.filter(pk=service.pk).exists():
+            return JsonResponse({"error": "skill", "message": "Майстер не має цієї навички"}, status=422)
 
-    if duration_min <= 0:
-        # fallback: якщо нема ні від послуги, ні з payload — використовуємо автологіку в твоєму Booking.save()
-        # але краще явно задати end_at з duration_min
-        duration_min = 30
+    # ---- статус за замовчуванням ----
+    status = "confirmed"
+    if allow_unskilled or master is None:
+        status = "tentative"
 
-    end_at = start_at + timedelta(minutes=duration_min)
+    # ---- кінець запису ----
+    end_at = start_at + timedelta(minutes=duration_min) if duration_min > 0 else None
 
-    # перевірка конфліктів
+    # ---- перевірка конфліктів (тільки якщо master заданий) ----
     with transaction.atomic():
-        conflict = Booking.objects.select_for_update().filter(
-            master=master, start_at__lt=end_at, end_at__gt=start_at
-        )
-        if conflict.exists():
-            return JsonResponse({"error": "conflict", "message": "Час зайнято"}, status=409)
+        if master:
+            overlap = (Booking.objects
+                       .select_for_update()
+                       .filter(master=master, start_at__lt=end_at, end_at__gt=start_at))
+            if overlap.exists():
+                return JsonResponse({"error": "conflict", "message": "Час зайнято"}, status=409)
 
         b = Booking.objects.create(
             deal=deal,
             start_at=start_at,
-            end_at=end_at,
-            master=master,
+            end_at=end_at,           # якщо None — порахується у Booking.save()
+            master=master,           # може бути None
             resource=resource,
             note=data.get("note", ""),
             color="#88CCEE",
+            status=status,
+            allow_unskilled=allow_unskilled,
         )
 
     return JsonResponse(booking_to_event(b), status=201)
@@ -172,59 +224,80 @@ def booking_create(request):
 def booking_update(request, pk):
     """
     PATCH /api/calendar/bookings/<id>
-    {
-      "start_at": "2025-09-17T11:00",   # optional
-      "end_at": "2025-09-17T11:30",     # optional
-      "duration_min": 30,               # optional (якщо нема end_at)
-      "master_id": 7,                   # optional
-      "resource_id": null,              # optional
-      "note": "..."                     # optional
-    }
+      {
+        "start_at": "2025-09-17T11:00:00+02:00",  # optional
+        "end_at":   "2025-09-17T11:30:00+02:00",  # optional
+        "duration_min": 30,                       # optional (якщо нема end_at)
+        "master_id": 7 | null,                    # optional (null → без майстра)
+        "resource_id": 3 | null,                  # optional
+        "note": "...",                            # optional
+        "allow_unskilled": true|false,            # optional
+        "status": "tentative|confirmed|cancelled" # optional
+      }
+
     DELETE /api/calendar/bookings/<id>
     """
-    b = get_object_or_404(Booking.objects.select_related("master"), pk=pk)
+    b = get_object_or_404(Booking.objects.select_related("deal", "master__user"), pk=pk)
 
     if request.method == "DELETE":
         b.delete()
         return JsonResponse({"ok": True})
 
-    if request.method not in ("PATCH", "POST"):  # деякі браузери не шлють PATCH з форм
+    if request.method not in ("PATCH", "POST"):  # деякі клієнти шлють POST як PATCH
         return HttpResponseNotAllowed(["PATCH", "DELETE"])
 
     data = parse_json(request)
     if not data:
         return HttpResponseBadRequest("Invalid JSON")
 
-    start_at = data.get("start_at")
-    end_at = data.get("end_at")
-    duration = data.get("duration_min")
+    # оновлення базових полів
+    start_at_str = data.get("start_at")
+    end_at_str   = data.get("end_at")
+    duration_min = data.get("duration_min")
 
-    if start_at:
-        start_at = timezone.make_aware(timezone.datetime.fromisoformat(start_at))
-        b.start_at = start_at
+    if start_at_str:
+        b.start_at = to_aware(start_at_str)
 
-    if end_at:
-        end_at = timezone.make_aware(timezone.datetime.fromisoformat(end_at))
-        b.end_at = end_at
-    elif duration and b.start_at:
-        b.end_at = b.start_at + timedelta(minutes=int(duration))
+    if end_at_str:
+        b.end_at = to_aware(end_at_str)
+    elif duration_min and b.start_at:
+        b.end_at = b.start_at + timedelta(minutes=int(duration_min))
 
+    # master може бути None
     if "master_id" in data:
-        b.master = get_object_or_404(Employee, pk=data["master_id"])
-    if "resource_id" in data:
-        b.resource = get_object_or_404(Resource, pk=data["resource_id"]) if data["resource_id"] else None
-    if "note" in data:
-        b.note = data["note"]
+        master_id = data.get("master_id")
+        b.master = get_object_or_404(Employee, pk=master_id) if master_id else None
 
-    # конфлікти
+    if "resource_id" in data:
+        res_id = data.get("resource_id")
+        b.resource = get_object_or_404(Resource, pk=res_id) if res_id else None
+
+    if "note" in data:
+        b.note = data["note"] or ""
+
+    if "allow_unskilled" in data:
+        b.allow_unskilled = bool(data["allow_unskilled"])
+
+    if "status" in data:
+        if data["status"] in {"tentative", "confirmed", "cancelled"}:
+            b.status = data["status"]
+
+    # перевірка навички (якщо master є і є service у deal)
+    service_line = b.deal.lines.select_related("service").first()
+    service = service_line.service if service_line else None
+    if b.master_id and service and not b.allow_unskilled:
+        if not b.master.services.filter(pk=service.pk).exists():
+            return JsonResponse({"error": "skill", "message": "Майстер не має цієї навички"}, status=422)
+
+    # конфлікти (тільки якщо master є)
     with transaction.atomic():
-        conflict = Booking.objects.select_for_update().filter(
-            master=b.master,
-            start_at__lt=b.end_at,
-            end_at__gt=b.start_at
-        ).exclude(pk=b.pk)
-        if conflict.exists():
-            return JsonResponse({"error": "conflict", "message": "Час зайнято"}, status=409)
+        if b.master_id:
+            overlap = (Booking.objects
+                       .select_for_update()
+                       .filter(master=b.master, start_at__lt=b.end_at, end_at__gt=b.start_at)
+                       .exclude(pk=b.pk))
+            if overlap.exists():
+                return JsonResponse({"error": "conflict", "message": "Час зайнято"}, status=409)
         b.save()
 
     return JsonResponse(booking_to_event(b), status=200)
