@@ -5,9 +5,15 @@ from datetime import timedelta
 from main.models import Deal, Employee
 
 class Service(models.Model):
+    class Group(models.TextChoices):
+        HAIR = "hair", "Перукар"
+        NAILS = "nails", "Манікюр/Педикюр"
+        COSMET = "cosmet", "Косметологія"
+        BARBER = "barber", "Барбер"
     """Послуга салону (каталог)."""
     name = models.CharField(max_length=160, db_index=True, verbose_name=_("Назва"))
     code = models.CharField(max_length=40, blank=True, verbose_name=_("Код/артикул"))
+    group = models.CharField(max_length=12, choices=Group.choices, default=Group.HAIR, verbose_name=_("Група"))
     base_price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name=_("Базова ціна"))
     duration_min = models.PositiveIntegerField(default=30, verbose_name=_("Тривалість, хв"))
     is_active = models.BooleanField(default=True, verbose_name=_("Активна"))
