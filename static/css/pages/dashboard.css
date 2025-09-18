@@ -31,3 +31,24 @@
 .fc-event.evt--tentative { opacity: .7; }
 .fc-event.evt--no-master { border-style: dashed; }
 .fc-event.evt--unskilled { box-shadow: inset 0 0 0 2px #f59e0b; } /* жовтий контур */
+
+#slotModal .modal-card { max-width: 440px; }
+.slot-list { display: grid; gap: .5rem; }
+.slot-item { display: flex; justify-content: space-between; align-items: center; padding: .5rem .75rem; border: 1px solid rgba(0,0,0,.08); border-radius: .5rem; }
+.slot-item small { opacity: .75; }
+
+/* Сьогодні в календарі */
+.fc .fc-day-today {
+  background: rgba(255, 225, 130, .35) !important; /* мʼяка жовта підсвітка */
+}
+
+/* Індикатор "зараз" зробимо виразнішим */
+.fc-timegrid-now-indicator-line,
+.fc-timegrid-now-indicator-arrow {
+  border-color: var(--primary) !important;
+}
+
+.fc-event.evt--no-master { opacity: .75; border-style: dashed; }
+.fc-event.evt--unskilled { box-shadow: 0 0 0 2px rgba(255,0,0,.25); }
+.fc-event.evt--tentative { filter: saturate(0.7); }
+

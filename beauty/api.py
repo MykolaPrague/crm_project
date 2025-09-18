@@ -148,20 +148,29 @@ def booking_create(request):
     deal = None
     service = None
 
-    if data.get("deal_id"):
-        deal = get_object_or_404(Deal, pk=data["deal_id"])
-        # спробуємо отримати послугу з першого рядка (для перевірки навички)
-        service_line = deal.lines.select_related("service").first()
-        service = service_line.service if service_line else None
-    else:
-        # режим client+service → створюємо Deal + DealLine
+    if not deal:
         client_id = data.get("client_id")
+        client_name = (data.get("client_name") or "").strip()
+        client_phone = (data.get("client_phone") or "").strip()
         service_id = data.get("service_id")
-        if not (client_id and service_id):
-            return HttpResponseBadRequest("Provide deal_id OR (client_id and service_id)")
 
-        client = get_object_or_404(Client, pk=client_id)
+        if not service_id:
+            return HttpResponseBadRequest("service_id required")
+
         service = get_object_or_404(Service, pk=service_id)
+
+        # визначаємо клієнта:
+        if client_id:
+            client = get_object_or_404(Client, pk=client_id)
+        else:
+            if not client_name:
+                return HttpResponseBadRequest("client_id or client_name required")
+            # створюємо мінімального клієнта
+            client = Client.objects.create(
+                name=client_name,
+                phone=client_phone,
+                owner=request.user  # якщо хочеш прив’язати
+            )
 
         if duration_min <= 0:
             duration_min = int(getattr(service, "duration_min", 30) or 30)
@@ -181,7 +190,6 @@ def booking_create(request):
                 quantity=1,
                 unit_price=getattr(service, "base_price", 0) or 0,
             )
-
     # ---- валідація навички майстра (якщо заданий і є service) ----
     if master and service and not allow_unskilled:
         if not master.services.filter(pk=service.pk).exists():
